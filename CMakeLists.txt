@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.14)
 project ("FastHTML")
 
 # Add source to this project's executable.
-add_executable (FastHTML "src/FastHTML.cpp" "include/FastHTML.h" "src/mian.cpp")
+add_executable (FastHTML "src/FastHTML.cpp" "src/mian.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET FastHTML PROPERTY CXX_STANDARD 20)
@@ -32,7 +32,8 @@ enable_testing()
 
 add_executable(
   ${PROJECT_NAME}-ut
-  src/tests.cpp
+  "src/tests.cpp"
+  "src/FastHTML.cpp"
 )
 target_link_libraries(
   ${PROJECT_NAME}-ut
