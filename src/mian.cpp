@@ -10,5 +10,6 @@ int main()
 	filter.second["id"] = "3";
 	HResponse hr(&s, filter);
 	cout << "Hello CMake. " << hr.GetData() << endl;
+	cout << ClearOtherTags("Ala <h1>ma</h1> kota <h2></h2>") << endl;
 	return 0;
 }

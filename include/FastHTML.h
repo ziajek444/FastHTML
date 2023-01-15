@@ -9,6 +9,8 @@
 #include <map>
 #include <list>
 
+std::string ClearOtherTags(const std::string dataWithTags);
+
 // TODO: Reference additional headers your program requires here.
 class HResponse
 {

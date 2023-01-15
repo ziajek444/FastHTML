@@ -4,8 +4,11 @@
 #include "../include/FastHTML.h"
 #include <algorithm>
 #include <vector>
+#include <ctype.h>
 
 static std::string RemoveSpaces(std::string str);
+static std::string StickPrefixWithTag(std::string str);
+static size_t FindWhitespace(std::string str, size_t offset=0);
 
 HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<std::string, std::string>> filter)
 {
@@ -13,14 +16,12 @@ HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<st
 	// using body->find(openTagOpenIndex) and body->find(openTagCloseIndex) wont work !!
 	// Removing whitespaces (i.e. by RemoveSpaces function) could be too expensive.
 	// Need to figure it out.
-	const size_t additionalSpace = 1024;
 	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
 	const std::string closeTagName = "</" + tag;
 	size_t openTagOpenIndex = body->find(openTagName);  // index { |<tag }
 	size_t openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 
-	
 	while (openTagOpenIndex != std::string::npos)
 	{
 		// check if need to find attrs
@@ -161,5 +162,101 @@ static std::string RemoveSpaces(std::string str)
 	return str;
 }
 
+std::string ClearOtherTags(std::string dataWithTags)
+{
+	size_t openTagOpenCharacterIndex = 0;
+	size_t openTagCloseCharacterIndex = 0;
+	size_t firstCloseCharacterIndex = 0;
+	size_t lastCloseCharacterIndex = 0;
+	size_t spaceAfterOpenTag = 0;
+	std::string tagName = "";
+	std::string openTagName = "";
+	std::string closeTagName = "";
+	const std::string closePrefixStr = "</";
+	const std::string openPrefixStr = "<";
+	
+	// stick prefixes '<' and '< /' with tag name
+	// " <  tag ... > " ->  " <tag ... > ",
+	//  " <  /  tag ... > " -> " </  tag ... > ",
+	// " </  tag ... > " ->  " </tag ... > "
+	std::string statement = StickPrefixWithTag(dataWithTags);
+
+	// STAYS |          REMOVE          | STAYS
+	//	 ... {<tag ... > ... </tag ... >} ...
+	while (true)
+	{
+		openTagOpenCharacterIndex = statement.find('<', lastCloseCharacterIndex);  // |<tag ...  >
+		if (openTagOpenCharacterIndex == std::string::npos) break;  // there is no any open prefixes
+		spaceAfterOpenTag = FindWhitespace(statement, openTagOpenCharacterIndex + 1);  // <tag| ...  >
+		
+
+		/*
+		openTagCloseCharacterIndex = statement.find('>', openTagOpenCharacterIndex + 1);  // <  tag  ...  |>
+		
+		while (isspace(statement[openTagOpenCharacterIndex + 1]))
+		{
+			statement = statement.erase(openTagOpenCharacterIndex + 1, 1);  // |<tag  ...  >
+		}
+
+		spaceAfterOpenTag = statement.find('<', lastCloseCharacterIndex);  // <tag|  ...  >
+		tagName = statement.substr(openTagOpenCharacterIndex + 1, spaceAfterOpenTag);  // tag
+		openTagName = openPrefixStr + tagName;
+		closeTagName = closePrefixStr + tagName;
 
 
+		unsigned int idx = 0;
+
+		lastCloseCharacterIndex = statement.find("</", openTagOpenCharacterIndex + 1);
+		if (lastCloseCharacterIndex == std::string::npos) {
+			// throw exception 
+			break;
+		} */
+		//statement = statement.erase(openTagOpenCharacterIndex, );
+	}
+	
+	return statement;
+}
+
+static std::string StickPrefixWithTag(std::string statement)
+{
+	size_t openTagOpenCharacterIndex = 0;
+	size_t openTagCloseCharacterIndex = 0;
+	const std::string closePrefixStr = "</";
+
+	// remove every whitespace between open prefix '<' and tag name
+	openTagOpenCharacterIndex = statement.find('<', openTagOpenCharacterIndex);
+	while (openTagOpenCharacterIndex != std::string::npos) {
+		unsigned int whitespaceCount = 0;
+
+		while (isspace(statement[openTagOpenCharacterIndex + 1 + whitespaceCount++])) {}
+		if (whitespaceCount) whitespaceCount--;
+		statement.erase(openTagOpenCharacterIndex + 1, whitespaceCount);
+		openTagOpenCharacterIndex = statement.find('<', openTagOpenCharacterIndex + 1);
+	}
+
+	// remove every whitespace between close prefix "</" and tag name
+	openTagCloseCharacterIndex = statement.find(closePrefixStr, openTagCloseCharacterIndex);
+	while (openTagCloseCharacterIndex != std::string::npos) {
+		unsigned int whitespaceCount = 0;
+
+		while (isspace(statement[openTagCloseCharacterIndex + 1 + whitespaceCount++])) {}
+		if (whitespaceCount) whitespaceCount--;
+		statement.erase(openTagCloseCharacterIndex + 1, whitespaceCount);
+		openTagCloseCharacterIndex = statement.find(closePrefixStr, openTagCloseCharacterIndex + 1);
+	}
+
+	return statement;
+}
+
+static size_t FindWhitespace(std::string str, size_t offset = 0)
+{
+	size_t whiteSpaceIndex = 0;
+	size_t strSize = str.size();
+
+	while (!isspace(str[offset + whiteSpaceIndex])) {
+		whiteSpaceIndex++;
+		if(whiteSpaceIndex + offset >= strSize) return std::string::npos;
+	}
+
+	return whiteSpaceIndex;
+}
