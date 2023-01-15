@@ -8,7 +8,7 @@
 
 static std::string RemoveSpaces(std::string str);
 static std::string StickPrefixWithTag(std::string str);
-static size_t FindWhitespace(std::string str, size_t offset=0);
+static size_t FindWhitespace(std::string str, size_t offset);
 
 HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<std::string, std::string>> filter)
 {
@@ -162,12 +162,17 @@ static std::string RemoveSpaces(std::string str)
 	return str;
 }
 
+// TODO Add tests
+/*
+* < tag > data < / tag >
+* every combination
+* <t></t> <t1> <t2></t1>  // t2 removed by t1, easy case
+* <t></t> <t1> <t2></t2>  // t1 stays which is not good
+*/
 std::string ClearOtherTags(std::string dataWithTags)
 {
 	size_t openTagOpenCharacterIndex = 0;
 	size_t openTagCloseCharacterIndex = 0;
-	size_t firstCloseCharacterIndex = 0;
-	size_t lastCloseCharacterIndex = 0;
 	size_t spaceAfterOpenTag = 0;
 	std::string tagName = "";
 	std::string openTagName = "";
@@ -187,13 +192,34 @@ std::string ClearOtherTags(std::string dataWithTags)
 	{
 		openTagOpenCharacterIndex = statement.find('<', lastCloseCharacterIndex);  // |<tag ...  >
 		if (openTagOpenCharacterIndex == std::string::npos) break;  // there is no any open prefixes
-		spaceAfterOpenTag = FindWhitespace(statement, openTagOpenCharacterIndex + 1);  // <tag| ...  >
-		
+
+		openTagCloseCharacterIndex = statement.find('<', openTagOpenCharacterIndex);  // <tag|>
+		spaceAfterOpenTag = FindWhitespace(statement, openTagOpenCharacterIndex);  // <tag| ...  > or NPOS
+		// if whitespace is after open postfix or whitespace dosen exist then first open postfix finish tag
+		if (spaceAfterOpenTag == std::string::npos || spaceAfterOpenTag > openTagCloseCharacterIndex)
+		{  // <tag>
+			tagName = statement.substr(openTagOpenCharacterIndex + 1, openTagCloseCharacterIndex - 1);
+		}
+		else {  // <tag ...>
+			tagName = statement.substr(openTagOpenCharacterIndex + 1, spaceAfterOpenTag - 1);
+		}
+
 		// get tagName, openTagName, closeTagName
+		openTagName = openPrefixStr + tagName;  // <tag
+		closeTagName = closePrefixStr + tagName;  // </tag
+
 		// find closest openTagName and set index fight before |<tag ... >
+		size_t closestOpenTagName = openTagOpenCharacterIndex;
+
 		// find latest closeTagName and set index to last character </tag ... |>
+		size_t latestCloseTagName = statement.rfind(closeTagName);
+		// TODO check return code
+		latestCloseTagName = statement.find('>', latestCloseTagName + closeTagName.size());
+		// TODO check return code
+		
 		// erase data between them (|<tag ... > ... ... ... </tag ... |>)
-		// fin, go testing
+		auto it = statement.begin();
+		statement.erase(it + closestOpenTagName, it + latestCloseTagName + 1);
 	}
 	
 	return statement;
