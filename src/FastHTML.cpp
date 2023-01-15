@@ -189,29 +189,11 @@ std::string ClearOtherTags(std::string dataWithTags)
 		if (openTagOpenCharacterIndex == std::string::npos) break;  // there is no any open prefixes
 		spaceAfterOpenTag = FindWhitespace(statement, openTagOpenCharacterIndex + 1);  // <tag| ...  >
 		
-
-		/*
-		openTagCloseCharacterIndex = statement.find('>', openTagOpenCharacterIndex + 1);  // <  tag  ...  |>
-		
-		while (isspace(statement[openTagOpenCharacterIndex + 1]))
-		{
-			statement = statement.erase(openTagOpenCharacterIndex + 1, 1);  // |<tag  ...  >
-		}
-
-		spaceAfterOpenTag = statement.find('<', lastCloseCharacterIndex);  // <tag|  ...  >
-		tagName = statement.substr(openTagOpenCharacterIndex + 1, spaceAfterOpenTag);  // tag
-		openTagName = openPrefixStr + tagName;
-		closeTagName = closePrefixStr + tagName;
-
-
-		unsigned int idx = 0;
-
-		lastCloseCharacterIndex = statement.find("</", openTagOpenCharacterIndex + 1);
-		if (lastCloseCharacterIndex == std::string::npos) {
-			// throw exception 
-			break;
-		} */
-		//statement = statement.erase(openTagOpenCharacterIndex, );
+		// get tagName, openTagName, closeTagName
+		// find closest openTagName and set index fight before |<tag ... >
+		// find latest closeTagName and set index to last character </tag ... |>
+		// erase data between them (|<tag ... > ... ... ... </tag ... |>)
+		// fin, go testing
 	}
 	
 	return statement;
