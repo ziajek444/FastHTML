@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 #include <ctype.h>
+#include <stdexcept>
 
 
 static std::string RemoveSpaces(std::string str);
@@ -49,6 +50,7 @@ HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<st
 				{
 					// not this statement I am fooking for, continue
 					openTagOpenIndex = body->find(openTagName, openTagOpenIndex + openTagName.size());
+					openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 					continue;
 				}
 				//check if vals are valid
@@ -130,6 +132,7 @@ HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<st
 					occurrence.push_back(data);
 				}
 				openTagOpenIndex = body->find(openTagName, openTagOpenIndex + openTagName.size());
+				openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 				continue;
 			}
 			else
@@ -146,6 +149,7 @@ HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<st
 			*/
 		} // NO ATTRS
 		openTagOpenIndex = body->find(openTagName, openTagOpenIndex+openTagName.size());
+		openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 		// set all again
 	} // WHILE
 }
@@ -179,14 +183,8 @@ std::string ClearOtherTags(std::string dataWithTags)
 	const std::string closePrefixStr = "</";
 	const std::string openPrefixStr = "<";
 	
-	// stick prefixes '<' and '< /' with tag name
-	// " <  tag ... > " ->  " <tag ... > ",
-	//  " <  /  tag ... > " -> " </  tag ... > ",
-	// " </  tag ... > " ->  " </tag ... > "
 	std::string statement = StickPrefixWithTag(dataWithTags);
 
-	// STAYS |          REMOVE          | STAYS
-	//	 ... {<tag ... > ... </tag ... >} ...
 	while (true)
 	{
 		openTagOpenCharacterIndex = statement.find('<');  // |<tag ...  >
@@ -195,7 +193,6 @@ std::string ClearOtherTags(std::string dataWithTags)
 		openTagCloseCharacterIndex = statement.find('>', openTagOpenCharacterIndex);  // <tag|>
 		// TODO Handle ret value
 		spaceAfterOpenTag = FindWhitespace(statement, openTagOpenCharacterIndex);  // <tag| ...  > or NPOS
-		// if whitespace is after open postfix or whitespace dosen exist then first open postfix finish tag
 		if (spaceAfterOpenTag == std::string::npos || spaceAfterOpenTag > openTagCloseCharacterIndex)
 		{  // <tag>
 			tagName = statement.substr(openTagOpenCharacterIndex + 1, openTagCloseCharacterIndex - openTagOpenCharacterIndex - 1);
@@ -204,21 +201,16 @@ std::string ClearOtherTags(std::string dataWithTags)
 			tagName = statement.substr(openTagOpenCharacterIndex + 1, spaceAfterOpenTag - openTagOpenCharacterIndex);
 		}
 
-		// get tagName, openTagName, closeTagName
 		tagName = RemoveSpaces(tagName);
 		openTagName = openPrefixStr + tagName;  // <tag
 		closeTagName = closePrefixStr + tagName;  // </tag
 
-		// find closest openTagName and set index fight before |<tag ... >
 		size_t closestOpenTagName = openTagOpenCharacterIndex;
-
-		// find closest closeTagName and set index to last character </tag ... |>
 		size_t latestCloseTagName = statement.find(closeTagName);
 		// TODO check return code
 		latestCloseTagName = statement.find('>', latestCloseTagName + closeTagName.size());
 		// TODO check return code
 		
-		// erase data between them (|<tag ... > ... ... ... </tag ... |>)
 		auto it = statement.begin();
 		statement.erase(it + closestOpenTagName, it + latestCloseTagName + 1);
 	}
@@ -261,6 +253,8 @@ static size_t FindWhitespace(std::string str, size_t offset = 0)
 {
 	size_t whiteSpaceIndex = 0;
 	size_t strSize = str.size();
+
+	if(offset >= strSize) return std::string::npos;
 
 	while (!isspace(str[offset + whiteSpaceIndex])) {
 		whiteSpaceIndex++;

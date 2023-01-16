@@ -3,7 +3,7 @@
 #include "../include/FastHTML.h"
 #define DO_TEST_ComplexTag_ComplexTag_1 0
 #define DO_TEST_ComplexTag_ComplexTag_2 0
-#define DO_TEST_ComplexTag_ComplexTag_3 0
+#define DO_TEST_ComplexTag_ComplexTag_3 1
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 1
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 1
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 1
@@ -21,9 +21,36 @@
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_15 1
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 1
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_01 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_02 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_03 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_04 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_05 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_06 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_07 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_08 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_09 1
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_10 1
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_01 1
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_02 1
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_03 1
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_04 1
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_05 1
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_06 1
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_07 1
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_08 1
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_01 1
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_02 1
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_03 1
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 1
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 1
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 1
 
 #define GTEST_COUT std::cerr << " ### "
 
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// obj init
 
 TEST(ComplexTag, ComplexTag_1) {
 #if DO_TEST_ComplexTag_ComplexTag_1 == 0
@@ -63,6 +90,9 @@ TEST(ComplexTag, ComplexTag_3) {
 	EXPECT_EQ(lastResponse.GetData(), "Han Solo");
 }
 
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// ClearOtherTags
 
 TEST(FastHTML_ClearOtherTags, ClearOtherTags_1) {
 #if DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 == 0
@@ -215,4 +245,232 @@ TEST(FastHTML_ClearOtherTags, ClearOtherTags_17) {
 	std::string resp = "< tag1 class = \"custom_class1\" id=\"100\">< tr />Unwanted data< / tag1 >< tr />Wanted data< tag2 id = 4.4 class = \"custom_class2\" ><tag1>< tr />Unwanted data</tag1>< / tag2 >";
 	std::string ret = ClearOtherTags(resp);
 	EXPECT_EQ(ret, "Wanted data");
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// GtestWrapper_FastHTML_FindWhitespace
+
+TEST(STATIC_FastHTML, FindWhitespace_01) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_01 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = " 0 index space";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, 0);
+	EXPECT_EQ(ret, 0);
+}
+
+TEST(STATIC_FastHTML, FindWhitespace_02) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_02 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = " 2 index space";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, 1);
+	EXPECT_EQ(ret, 2);
+}
+
+TEST(STATIC_FastHTML, FindWhitespace_03) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_03 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = " 8 index space";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, 5);
+	EXPECT_EQ(ret, 8);
+}
+
+TEST(STATIC_FastHTML, FindWhitespace_04) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_04 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = " NPOS index space";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, 12);
+	EXPECT_EQ(ret, std::string::npos);
+}
+
+TEST(STATIC_FastHTML, FindWhitespace_05) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_05 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "NPOS";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, 12);
+	EXPECT_EQ(ret, std::string::npos);
+}
+
+TEST(STATIC_FastHTML, FindWhitespace_06) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_06 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, 0);
+	EXPECT_EQ(ret, std::string::npos);
+}
+
+TEST(STATIC_FastHTML, FindWhitespace_07) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_07 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = " ";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, 0);
+	EXPECT_EQ(ret, 0);
+}
+
+TEST(STATIC_FastHTML, FindWhitespace_08) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_08 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = " Lot of spaces but npos cos started too far ";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, 1000);
+	EXPECT_EQ(ret, std::string::npos);
+}
+
+TEST(STATIC_FastHTML, FindWhitespace_09) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_09 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, 1000);
+	EXPECT_EQ(ret, std::string::npos);
+}
+
+TEST(STATIC_FastHTML, FindWhitespace_10) {
+#if DO_TEST_STATIC_FastHTML_FindWhitespace_10 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = " Lot of spaces but npos cos started too far ";
+	size_t ret = GtestWrapper_FastHTML_FindWhitespace(resp, -1); // size_t will never be smaller than 0
+	EXPECT_EQ(ret, std::string::npos);
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// GtestWrapper_FastHTML_StickPrefixWithTag
+
+TEST(STATIC_FastHTML, StickPrefixWithTag_01) {
+#if DO_TEST_STATIC_FastHTML_StickPrefixWithTag_01 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<tag>Some Data</tag>";
+	std::string ret = GtestWrapper_FastHTML_StickPrefixWithTag(resp);
+	EXPECT_EQ(ret, "<tag>Some Data</tag>");
+}
+
+TEST(STATIC_FastHTML, StickPrefixWithTag_02) {
+#if DO_TEST_STATIC_FastHTML_StickPrefixWithTag_02 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "< tag>Some Data</tag>";
+	std::string ret = GtestWrapper_FastHTML_StickPrefixWithTag(resp);
+	EXPECT_EQ(ret, "<tag>Some Data</tag>");
+}
+
+TEST(STATIC_FastHTML, StickPrefixWithTag_03) {
+#if DO_TEST_STATIC_FastHTML_StickPrefixWithTag_03 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<tag >Some Data</tag>";
+	std::string ret = GtestWrapper_FastHTML_StickPrefixWithTag(resp);
+	EXPECT_EQ(ret, "<tag >Some Data</tag>");
+}
+
+TEST(STATIC_FastHTML, StickPrefixWithTag_04) {
+#if DO_TEST_STATIC_FastHTML_StickPrefixWithTag_04 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<tag>Some Data< /tag>";
+	std::string ret = GtestWrapper_FastHTML_StickPrefixWithTag(resp);
+	EXPECT_EQ(ret, "<tag>Some Data</tag>");
+}
+
+TEST(STATIC_FastHTML, StickPrefixWithTag_05) {
+#if DO_TEST_STATIC_FastHTML_StickPrefixWithTag_05 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<tag>Some Data</ tag>";
+	std::string ret = GtestWrapper_FastHTML_StickPrefixWithTag(resp);
+	EXPECT_EQ(ret, "<tag>Some Data</tag>");
+}
+
+TEST(STATIC_FastHTML, StickPrefixWithTag_06) {
+#if DO_TEST_STATIC_FastHTML_StickPrefixWithTag_06 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<tag>Some Data</tag >";
+	std::string ret = GtestWrapper_FastHTML_StickPrefixWithTag(resp);
+	EXPECT_EQ(ret, "<tag>Some Data</tag >");
+}
+
+TEST(STATIC_FastHTML, StickPrefixWithTag_07) {
+#if DO_TEST_STATIC_FastHTML_StickPrefixWithTag_07 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "< tag >Some Data< / tag >";
+	std::string ret = GtestWrapper_FastHTML_StickPrefixWithTag(resp);
+	EXPECT_EQ(ret, "<tag >Some Data</tag >");
+}
+
+TEST(STATIC_FastHTML, StickPrefixWithTag_08) {
+#if DO_TEST_STATIC_FastHTML_StickPrefixWithTag_08 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "< / tag> < / tag > < tag> Some Data < / tag > < tag>< tag > < tag>";
+	std::string ret = GtestWrapper_FastHTML_StickPrefixWithTag(resp);
+	EXPECT_EQ(ret, "</tag> </tag > <tag> Some Data </tag > <tag><tag > <tag>");
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// GtestWrapper_FastHTML_RemoveSpaces
+
+TEST(STATIC_FastHTML, RemoveSpaces_01) {
+#if DO_TEST_STATIC_FastHTML_RemoveSpaces_01 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "     few spaces at start";
+	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
+	EXPECT_EQ(ret, "fewspacesatstart");
+}
+
+TEST(STATIC_FastHTML, RemoveSpaces_02) {
+#if DO_TEST_STATIC_FastHTML_RemoveSpaces_02 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "few spaces at the end     ";
+	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
+	EXPECT_EQ(ret, "fewspacesattheend");
+}
+
+TEST(STATIC_FastHTML, RemoveSpaces_03) {
+#if DO_TEST_STATIC_FastHTML_RemoveSpaces_03 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "nospacesatall";
+	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
+	EXPECT_EQ(ret, "nospacesatall");
+}
+
+TEST(STATIC_FastHTML, RemoveSpaces_04) {
+#if DO_TEST_STATIC_FastHTML_RemoveSpaces_04 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "";
+	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
+	EXPECT_EQ(ret, "");
+}
+
+TEST(STATIC_FastHTML, RemoveSpaces_05) {
+#if DO_TEST_STATIC_FastHTML_RemoveSpaces_05 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "            ";
+	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
+	EXPECT_EQ(ret, "");
+}
+
+TEST(STATIC_FastHTML, RemoveSpaces_06) {
+#if DO_TEST_STATIC_FastHTML_RemoveSpaces_06 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = " ";
+	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
+	EXPECT_EQ(ret, "");
 }
