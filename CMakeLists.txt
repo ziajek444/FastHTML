@@ -15,7 +15,7 @@ endif()
 # TODO: Add tests and install targets if needed.
 
 # GoogleTest requires at least C++14
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
 FetchContent_Declare(

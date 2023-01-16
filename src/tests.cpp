@@ -1,52 +1,56 @@
 #include <gtest/gtest.h>
 #include <string>
 #include "../include/FastHTML.h"
-#define DO_TEST_ComplexTag_ComplexTag_1 0
-#define DO_TEST_ComplexTag_ComplexTag_2 0
+#define DO_TEST_ComplexTag_ComplexTag_1 1
+#define DO_TEST_ComplexTag_ComplexTag_2 1
 #define DO_TEST_ComplexTag_ComplexTag_3 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_04 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_05 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_06 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_07 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_08 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_09 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_10 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_11 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_12 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_13 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_14 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_15 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_01 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_02 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_03 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_04 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_05 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_06 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_07 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_08 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_09 1
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_10 1
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_01 1
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_02 1
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_03 1
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_04 1
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_05 1
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_06 1
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_07 1
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_08 1
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_01 1
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_02 1
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_03 1
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 1
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 1
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 1
+#define DO_TEST_ComplexTag_ComplexTag_4 1
+#define DO_TEST_ComplexTag_ComplexTag_5 1
+#define DO_TEST_ComplexTag_ComplexTag_6 1
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_04 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_05 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_06 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_07 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_08 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_09 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_10 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_11 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_12 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_13 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_14 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_15 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 0
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 0  // related to DO_TEST_ComplexTag_ComplexTag_4
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_01 0
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_02 0
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_03 0
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_04 0
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_05 0
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_06 0
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_07 0
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_08 0
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_09 0
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_10 0
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_01 0
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_02 0
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_03 0
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_04 0
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_05 0
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_06 0
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_07 0
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_08 0
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_01 0
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_02 0
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_03 0
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 0
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 0
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 0
 
-#define GTEST_COUT std::cerr << " ### "
+#define GTEST_COUT std::cerr << " ! ! ! \n"
 
 
 // -  -  -  -  -  -  -  -  -  -  -  - 
@@ -61,6 +65,8 @@ TEST(ComplexTag, ComplexTag_1) {
 	filter.first = "p";
 	filter.second;
 	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetData();
+	GTEST_COUT << ret.c_str() << std::endl;
 	EXPECT_EQ(lastResponse.GetData(), "General Kenobi");
 
 	std::string rura;	
@@ -75,6 +81,8 @@ TEST(ComplexTag, ComplexTag_2) {
 	filter.first = "p";
 	filter.second["class"] = "Dog";
 	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetData();
+	GTEST_COUT << ret.c_str() << std::endl;
 	EXPECT_EQ(lastResponse.GetData(), "Hello There");
 }
 
@@ -87,7 +95,54 @@ TEST(ComplexTag, ComplexTag_3) {
 	filter.first = "p";
 	filter.second["class"] = "Cat";
 	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetData();
+	GTEST_COUT << ret.c_str() << std::endl;
 	EXPECT_EQ(lastResponse.GetData(), "Han Solo");
+}
+
+TEST(ComplexTag, ComplexTag_4) {
+#if DO_TEST_ComplexTag_ComplexTag_4 == 0
+	GTEST_SKIP();
+#endif
+	// <p></p> inside
+	std::string resp = "<body><div><p>General Kenobi</p></div><span>4.4</span><div><p>Hello There</p><p class = \"Dog\">Hello There</p></div><p class=\"Cat\">Han <p>nothing</p>Solo</p><div><p>Grives</p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["class"] = "Cat";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetData();
+	GTEST_COUT << ret.c_str() << std::endl;
+	EXPECT_EQ(lastResponse.GetData(), "Han <p>nothing</p>Solo");
+}
+
+TEST(ComplexTag, ComplexTag_5) {
+#if DO_TEST_ComplexTag_ComplexTag_5 == 0
+	GTEST_SKIP();
+#endif
+	// </p> inside, no open exists
+	std::string resp = "<body><div><p>General Kenobi</p></div><span>4.4</span><div><p>Hello There</p><p class = \"Dog\">Hello There</p></div><p class=\"Cat\">Han </p>Solo</p><div><p>Grives</p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["class"] = "Cat";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetData();
+	GTEST_COUT << ret.c_str() << std::endl;
+	EXPECT_EQ(lastResponse.GetData(), "Han ");
+}
+
+TEST(ComplexTag, ComplexTag_6) {
+#if DO_TEST_ComplexTag_ComplexTag_6 == 0
+	GTEST_SKIP();
+#endif
+	// <p> inside, no close exists
+	std::string resp = "<body><div><p>General Kenobi</p></div><span>4.4</span><div><p>Hello There</p><p class = \"Dog\">Hello There</p></div><p class=\"Cat\">Han <p>Solo</p><div><p>Grives</p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["class"] = "Cat";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetData();
+	GTEST_COUT << ret.c_str() << std::endl;
+	EXPECT_EQ(lastResponse.GetData(), "Han <p>Solo</p><div><p>Grives");
 }
 
 
@@ -246,6 +301,17 @@ TEST(FastHTML_ClearOtherTags, ClearOtherTags_17) {
 	std::string ret = ClearOtherTags(resp);
 	EXPECT_EQ(ret, "Wanted data");
 }
+
+TEST(FastHTML_ClearOtherTags, ClearOtherTags_18) {
+#if DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "Han <p>nothing< / p>Solo";
+	std::string ret = ClearOtherTags(resp);
+	EXPECT_EQ(ret, "Han Solo");
+}
+
+
 
 
 // -  -  -  -  -  -  -  -  -  -  -  - 

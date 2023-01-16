@@ -1,5 +1,5 @@
 ﻿// FastHTML.cpp : Defines the entry point for the application.
-// v0.0.1a
+// v0.1.0
 
 #ifdef CUSTOM_GOOGLE_TEST_DEF
 //#include "../include/tests.hpp"
@@ -10,14 +10,75 @@
 #include <vector>
 #include <ctype.h>
 #include <stdexcept>
+#include <tuple>
 
 
-static std::string RemoveSpaces(std::string str);
-static std::string StickPrefixWithTag(std::string str);
-static size_t FindWhitespace(std::string str, size_t offset);
+// STATIC PROTOTYPES
+
+static std::string RemoveSpaces(std::string);
+static std::string StickPrefixWithTag(std::string);
+static size_t FindWhitespace(const std::string, const size_t);
+static bool HasAnyAttr(const std::string statement, const std::string openTagName);
+static bool RequireAnyAttr(const std::map<std::string, std::string>);
+static std::tuple<size_t, size_t> GetOpenTagIndexes(const std::string* body, const std::string openTagName);
+static size_t GetNextOpenTagOpenIndex(const std::string*, const std::string, const size_t);
+static size_t GetNextOpenTagCloseIndex(const std::string*, const std::string, const size_t);
+static std::string ExtractStatement(const std::string*, const size_t, const size_t);
+static bool CheckReqAttrExists(const std::string statement, const std::map<std::string, std::string> dict);
+static bool CheckAttrsAreValid(const std::string statement, const std::string openTagName, const std::map<std::string, std::string> dict);
+static std::string ExtractDataTagWithAttr(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName);
 
 
-HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<std::string, std::string>> filter)
+// CTOR/DTOR
+
+/*HResponse::HResponse(const std::string* body, std::pair<std::string, std::map<std::string, std::string>> filter)
+{
+	if (filter.first.size() < 1) return;
+
+	const std::string tag = RemoveSpaces(filter.first);
+	const std::string openTagName = '<' + tag;
+	const std::string closeTagName = "</" + tag;
+	auto [openTagOpenIndex, openTagCloseIndex] = GetOpenTagIndexes(body, openTagName);
+
+	while (openTagOpenIndex != std::string::npos) {
+		std::string statement = ExtractStatement(body, openTagOpenIndex, openTagCloseIndex);  // |<tag ... ... >|
+		statement = RemoveSpaces(statement);  // <tag...>
+
+		bool reqAnyAttr = RequireAnyAttr(filter.second);
+		bool hasAnyAttr = HasAnyAttr(statement, openTagName);
+
+		if (reqAnyAttr && hasAnyAttr) { // ATTRS	
+			if (!CheckReqAttrExists(statement, filter.second)) {
+				break;
+			}
+
+			if (!CheckAttrsAreValid(statement, openTagName, filter.second)) {
+				break;
+			}
+
+			size_t closeTagOpenIndex;
+			closeTagOpenIndex = body->find(closeTagName, openTagCloseIndex + 1);
+			if (closeTagOpenIndex == std::string::npos || openTagCloseIndex + 1 == closeTagOpenIndex) break;
+
+			std::string data = ExtractDataTagWithAttr(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName);
+			occurrence.push_back(data);
+		}
+		else if (!reqAnyAttr && !hasAnyAttr) { // NO ATTRS
+			size_t closeTagOpenIndex;
+			closeTagOpenIndex = body->find(closeTagName, openTagCloseIndex + 1);
+			if (closeTagOpenIndex == std::string::npos || openTagCloseIndex + 1 == closeTagOpenIndex) break;
+
+			std::string data = ExtractDataTagWithAttr(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName);
+			occurrence.push_back(data);
+		}
+		else { }  // wrong statement
+
+		openTagOpenIndex = GetNextOpenTagOpenIndex(body, openTagName, openTagOpenIndex);
+		openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagName, openTagOpenIndex);
+	} // WHILE
+}*/
+
+HResponse::HResponse(const std::string* body, std::pair<std::string, std::map<std::string, std::string>> filter)
 {
 	// if html code would have whitespaces between open character '<' and tag name i.e. < div ... >
 	// using body->find(openTagOpenIndex) and body->find(openTagCloseIndex) wont work !!
@@ -55,7 +116,7 @@ HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<st
 				}
 				//check if vals are valid
 				std::vector<size_t> pos;
-				std::string attrStatement = statement.substr(openTagName.size(), statement.size()- openTagName.size() - 1);  // <tag|attr1="asd"attr2="qwe"attr3="123"|>
+				std::string attrStatement = statement.substr(openTagName.size(), statement.size() - openTagName.size() - 1);  // <tag|attr1="asd"attr2="qwe"attr3="123"|>
 				if (attrStatement.back() == '/')
 				{ // TODO remove this if statement and handle '/' character
 					attrStatement.erase(attrStatement.end() - 1, attrStatement.end());
@@ -99,7 +160,7 @@ HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<st
 					// B
 					// closingTagIndex has an index
 					// check if redundant openTagName appear between <tag> and </tag>
-					size_t nextRedundantOpenTagIndex = body->substr(openTagCloseIndex + 1, closingTagIndex).find(openTagName) + openTagCloseIndex + 1;
+					size_t nextRedundantOpenTagIndex = body->substr(openTagCloseIndex + 1, closingTagIndex - (openTagCloseIndex + 1)).find(openTagName);
 					bool tmp = false;
 					if (nextRedundantOpenTagIndex != std::string::npos)
 					{ // found redundant openTagName on nextRedundantOpenTagIndex
@@ -109,7 +170,7 @@ HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<st
 						{
 							// ups open
 							while (true) {
-								nextRedundantOpenTagIndex = body->substr(nextRedundantOpenTagIndex + openTagName.size(), closingTagIndex).find(openTagName);
+								nextRedundantOpenTagIndex = body->substr(openTagCloseIndex + 1 + nextRedundantOpenTagIndex + openTagName.size(), closingTagIndex - (nextRedundantOpenTagIndex + openTagName.size() + openTagCloseIndex + 1)).find(openTagName);
 								if (nextRedundantOpenTagIndex != std::string::npos)
 								{
 									redundantOpens++;
@@ -145,10 +206,10 @@ HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<st
 			/*
 			* if have attrs > continue
 			* else finalOk, add data from this statement to object
-			* 
+			*
 			*/
 		} // NO ATTRS
-		openTagOpenIndex = body->find(openTagName, openTagOpenIndex+openTagName.size());
+		openTagOpenIndex = body->find(openTagName, openTagOpenIndex + openTagName.size());
 		openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 		// set all again
 	} // WHILE
@@ -158,6 +219,9 @@ HResponse::~HResponse()
 {
 }
 
+
+// METHODS
+
 std::string HResponse::GetData()
 {
 	if (occurrence.size() > 0) return occurrence.back();
@@ -165,11 +229,8 @@ std::string HResponse::GetData()
 	return "UPS";
 }
 
-static std::string RemoveSpaces(std::string str)
-{
-	str.erase(remove(str.begin(), str.end(), ' '), str.end());
-	return str;
-}
+
+// FUNCTIONS
 
 std::string ClearOtherTags(std::string dataWithTags)
 {
@@ -218,6 +279,16 @@ std::string ClearOtherTags(std::string dataWithTags)
 	return statement;
 }
 
+
+// STATIC DEFINITIONS
+
+static std::string RemoveSpaces(std::string str)
+{
+	str.erase(remove(str.begin(), str.end(), ' '), str.end());
+
+	return str;
+}
+
 static std::string StickPrefixWithTag(std::string statement)
 {
 	size_t openTagOpenCharacterIndex = 0;
@@ -249,7 +320,7 @@ static std::string StickPrefixWithTag(std::string statement)
 	return statement;
 }
 
-static size_t FindWhitespace(std::string str, size_t offset = 0)
+static size_t FindWhitespace(const std::string str, const size_t offset = 0)
 {
 	size_t whiteSpaceIndex = 0;
 	size_t strSize = str.size();
@@ -264,8 +335,114 @@ static size_t FindWhitespace(std::string str, size_t offset = 0)
 	return whiteSpaceIndex + offset;
 }
 
+static bool HasAnyAttr(const std::string statement, const std::string openTagName)
+{
+	return statement.size() > openTagName.size() + 2;  // "<tag...>" > "<tag" + 2  
+
+}
+
+static bool RequireAnyAttr(const std::map<std::string, std::string> dict)
+{
+	return dict.size() > 0;
+}
+
+// !!!
+// I need to find a way to reuse structured bindings, otherwise it is useless feature !!!
+// !!!
+static std::tuple<size_t, size_t> GetOpenTagIndexes(const std::string* body, const std::string openTagName)
+{
+	size_t openTagOpenIndex = body->find(openTagName);  // index { |<tag }
+	size_t openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
+
+	return std::make_tuple(openTagOpenIndex, openTagCloseIndex);
+}
+
+static size_t GetNextOpenTagOpenIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
+{
+	return body->find(openTagName, openTagOpenIndex + openTagName.size());
+}
+
+static size_t GetNextOpenTagCloseIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
+{
+	return body->find('>', openTagOpenIndex + openTagName.size());
+}
+
+static std::string ExtractStatement(const std::string* body, const size_t openTagOpenIndex, const size_t openTagCloseIndex)
+{
+	return body->substr(openTagOpenIndex, openTagCloseIndex - openTagOpenIndex + 1);
+}
+
+static bool CheckReqAttrExists(const std::string statement, const std::map<std::string, std::string> dict)
+{
+	bool ret = true;
+	for (const auto& kv : dict)
+	{
+		if (statement.find(kv.first) != std::string::npos) { continue; }
+		else { ret = false; break; }
+	}
+
+	return ret;
+}
+
+static bool CheckAttrsAreValid(const std::string statement, const std::string openTagName, const std::map<std::string, std::string> dict)
+{
+	bool attrsAreValid = true;
+
+	std::string attrStatement = statement.substr(openTagName.size(), statement.size() - openTagName.size() - 1);  // <tag|attr1="asd"attr2="qwe"attr3="123"|>
+	if (attrStatement.back() == '/')
+	{ // TODO remove this if statement and handle '/' character
+		attrStatement.erase(attrStatement.end() - 1, attrStatement.end());
+	}
+
+	if (dict.size() < 1) return false;
+
+	for (const auto& kv : dict)
+	{
+		size_t attrBegin = attrStatement.find(kv.first);
+		size_t valBegin = attrBegin + kv.first.size() + 1; // =
+		size_t valEnd = valBegin + kv.second.size() + 2;  // "" 
+		if (attrStatement.substr(valBegin, valEnd).find(kv.second) == std::string::npos)
+		{
+			attrsAreValid = false;
+			break;
+		}
+	}
+
+	return attrsAreValid;
+}
+
+static std::string ExtractDataTagWithAttr(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName)
+{
+	size_t nextRedundantOpenTagIndex = body->substr(openTagCloseIndex + 1, closeTagOpenIndex - (openTagCloseIndex + 1)).find(openTagName);
+	if (nextRedundantOpenTagIndex != std::string::npos)
+	{
+		size_t redundantOpens = 1;
+		while (redundantOpens)
+		{
+			while (true) {
+				nextRedundantOpenTagIndex = body->substr(nextRedundantOpenTagIndex + openTagName.size(), closeTagOpenIndex - (nextRedundantOpenTagIndex + openTagName.size())).find(openTagName);
+				if (nextRedundantOpenTagIndex != std::string::npos)
+				{
+					redundantOpens++;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			nextRedundantOpenTagIndex = closeTagOpenIndex + closeTagName.size();
+			closeTagOpenIndex = body->find(closeTagName, closeTagOpenIndex + closeTagName.size());
+			redundantOpens--;
+		}
+	}
+
+	return body->substr(openTagCloseIndex + 1, closeTagOpenIndex - (openTagCloseIndex + 1));
+}
+
 
 // GTEST Defines
+
 #ifdef CUSTOM_GOOGLE_TEST_DEF
 std::string GtestWrapper_FastHTML_RemoveSpaces(std::string str)
 {
