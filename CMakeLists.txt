@@ -39,6 +39,7 @@ target_link_libraries(
   ${PROJECT_NAME}-ut
   GTest::gtest_main
 )
+add_definitions(-DCUSTOM_GOOGLE_TEST_DEF)
 
 include(GoogleTest)
 gtest_discover_tests(${PROJECT_NAME}-ut)

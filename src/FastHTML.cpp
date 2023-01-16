@@ -1,14 +1,20 @@
 ﻿// FastHTML.cpp : Defines the entry point for the application.
 // v0.0.1a
 
+#ifdef CUSTOM_GOOGLE_TEST_DEF
+//#include "../include/tests.hpp"
+#endif
+
 #include "../include/FastHTML.h"
 #include <algorithm>
 #include <vector>
 #include <ctype.h>
 
+
 static std::string RemoveSpaces(std::string str);
 static std::string StickPrefixWithTag(std::string str);
 static size_t FindWhitespace(std::string str, size_t offset);
+
 
 HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<std::string, std::string>> filter)
 {
@@ -21,7 +27,6 @@ HResponse::HResponse(const std::string *body, std::pair<std::string, std::map<st
 	const std::string closeTagName = "</" + tag;
 	size_t openTagOpenIndex = body->find(openTagName);  // index { |<tag }
 	size_t openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
-
 	while (openTagOpenIndex != std::string::npos)
 	{
 		// check if need to find attrs
@@ -162,17 +167,11 @@ static std::string RemoveSpaces(std::string str)
 	return str;
 }
 
-// TODO Add tests
-/*
-* < tag > data < / tag >
-* every combination
-* <t></t> <t1> <t2></t1>  // t2 removed by t1, easy case
-* <t></t> <t1> <t2></t2>  // t1 stays which is not good
-*/
 std::string ClearOtherTags(std::string dataWithTags)
 {
 	size_t openTagOpenCharacterIndex = 0;
 	size_t openTagCloseCharacterIndex = 0;
+	size_t lastCloseCharacterIndex = 0;
 	size_t spaceAfterOpenTag = 0;
 	std::string tagName = "";
 	std::string openTagName = "";
@@ -190,29 +189,31 @@ std::string ClearOtherTags(std::string dataWithTags)
 	//	 ... {<tag ... > ... </tag ... >} ...
 	while (true)
 	{
-		openTagOpenCharacterIndex = statement.find('<', lastCloseCharacterIndex);  // |<tag ...  >
+		openTagOpenCharacterIndex = statement.find('<');  // |<tag ...  >
 		if (openTagOpenCharacterIndex == std::string::npos) break;  // there is no any open prefixes
 
-		openTagCloseCharacterIndex = statement.find('<', openTagOpenCharacterIndex);  // <tag|>
+		openTagCloseCharacterIndex = statement.find('>', openTagOpenCharacterIndex);  // <tag|>
+		// TODO Handle ret value
 		spaceAfterOpenTag = FindWhitespace(statement, openTagOpenCharacterIndex);  // <tag| ...  > or NPOS
 		// if whitespace is after open postfix or whitespace dosen exist then first open postfix finish tag
 		if (spaceAfterOpenTag == std::string::npos || spaceAfterOpenTag > openTagCloseCharacterIndex)
 		{  // <tag>
-			tagName = statement.substr(openTagOpenCharacterIndex + 1, openTagCloseCharacterIndex - 1);
+			tagName = statement.substr(openTagOpenCharacterIndex + 1, openTagCloseCharacterIndex - openTagOpenCharacterIndex - 1);
 		}
 		else {  // <tag ...>
-			tagName = statement.substr(openTagOpenCharacterIndex + 1, spaceAfterOpenTag - 1);
+			tagName = statement.substr(openTagOpenCharacterIndex + 1, spaceAfterOpenTag - openTagOpenCharacterIndex);
 		}
 
 		// get tagName, openTagName, closeTagName
+		tagName = RemoveSpaces(tagName);
 		openTagName = openPrefixStr + tagName;  // <tag
 		closeTagName = closePrefixStr + tagName;  // </tag
 
 		// find closest openTagName and set index fight before |<tag ... >
 		size_t closestOpenTagName = openTagOpenCharacterIndex;
 
-		// find latest closeTagName and set index to last character </tag ... |>
-		size_t latestCloseTagName = statement.rfind(closeTagName);
+		// find closest closeTagName and set index to last character </tag ... |>
+		size_t latestCloseTagName = statement.find(closeTagName);
 		// TODO check return code
 		latestCloseTagName = statement.find('>', latestCloseTagName + closeTagName.size());
 		// TODO check return code
@@ -247,9 +248,9 @@ static std::string StickPrefixWithTag(std::string statement)
 	while (openTagCloseCharacterIndex != std::string::npos) {
 		unsigned int whitespaceCount = 0;
 
-		while (isspace(statement[openTagCloseCharacterIndex + 1 + whitespaceCount++])) {}
+		while (isspace(statement[openTagCloseCharacterIndex + 2 + whitespaceCount++])) {}
 		if (whitespaceCount) whitespaceCount--;
-		statement.erase(openTagCloseCharacterIndex + 1, whitespaceCount);
+		statement.erase(openTagCloseCharacterIndex + 2, whitespaceCount);
 		openTagCloseCharacterIndex = statement.find(closePrefixStr, openTagCloseCharacterIndex + 1);
 	}
 
@@ -266,5 +267,23 @@ static size_t FindWhitespace(std::string str, size_t offset = 0)
 		if(whiteSpaceIndex + offset >= strSize) return std::string::npos;
 	}
 
-	return whiteSpaceIndex;
+	return whiteSpaceIndex + offset;
 }
+
+
+// GTEST Defines
+#ifdef CUSTOM_GOOGLE_TEST_DEF
+std::string GtestWrapper_FastHTML_RemoveSpaces(std::string str)
+{
+	return RemoveSpaces(str);
+}
+std::string GtestWrapper_FastHTML_StickPrefixWithTag(std::string str)
+{
+	return StickPrefixWithTag(str);
+}
+size_t GtestWrapper_FastHTML_FindWhitespace(std::string str, size_t offset = 0)
+{
+	return FindWhitespace(str, offset);
+}
+#endif
+

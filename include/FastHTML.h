@@ -23,3 +23,9 @@ public:
 private:
 	std::list<std::string> occurrence;
 };
+
+#ifdef CUSTOM_GOOGLE_TEST_DEF
+std::string GtestWrapper_FastHTML_RemoveSpaces(std::string);
+std::string GtestWrapper_FastHTML_StickPrefixWithTag(std::string);
+size_t GtestWrapper_FastHTML_FindWhitespace(std::string, size_t);
+#endif
