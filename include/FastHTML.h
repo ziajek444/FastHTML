@@ -18,7 +18,9 @@ public:
 	HResponse(const std::string* body, std::pair<std::string, std::map<std::string, std::string>> filter);
 	virtual ~HResponse();
 
-	std::string GetData();
+	std::string GetLastData();
+	std::string GetFirstData();
+	std::list<std::string> GetListedData();
 
 private:
 	std::list<std::string> occurrence;

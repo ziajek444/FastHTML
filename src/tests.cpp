@@ -1,54 +1,63 @@
 #include <gtest/gtest.h>
 #include <string>
 #include "../include/FastHTML.h"
-#define DO_TEST_ComplexTag_ComplexTag_1 1
-#define DO_TEST_ComplexTag_ComplexTag_2 1
-#define DO_TEST_ComplexTag_ComplexTag_3 1
-#define DO_TEST_ComplexTag_ComplexTag_4 1
-#define DO_TEST_ComplexTag_ComplexTag_5 1
-#define DO_TEST_ComplexTag_ComplexTag_6 1
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_04 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_05 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_06 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_07 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_08 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_09 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_10 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_11 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_12 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_13 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_14 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_15 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 0
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 0  // related to DO_TEST_ComplexTag_ComplexTag_4
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_01 0
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_02 0
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_03 0
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_04 0
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_05 0
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_06 0
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_07 0
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_08 0
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_09 0
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_10 0
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_01 0
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_02 0
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_03 0
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_04 0
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_05 0
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_06 0
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_07 0
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_08 0
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_01 0
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_02 0
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_03 0
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 0
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 0
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 0
+
+#define RUN 1
+#define SKIP 0
+
+#define DO_TEST_ComplexTag_ComplexTag_01 RUN
+#define DO_TEST_ComplexTag_ComplexTag_02 RUN
+#define DO_TEST_ComplexTag_ComplexTag_03 RUN
+#define DO_TEST_ComplexTag_ComplexTag_04 RUN
+#define DO_TEST_ComplexTag_ComplexTag_05 RUN
+#define DO_TEST_ComplexTag_ComplexTag_06 RUN
+#define DO_TEST_ComplexTag_ComplexTag_07 RUN
+#define DO_TEST_ComplexTag_ComplexTag_08 RUN
+#define DO_TEST_ComplexTag_ComplexTag_09 RUN
+#define DO_TEST_ComplexTag_ComplexTag_10 RUN
+#define DO_TEST_ComplexTag_ComplexTag_11 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_04 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_05 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_06 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_07 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_08 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_09 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_10 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_11 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_12 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_13 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_14 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_15 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 RUN
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 RUN  // related to DO_TEST_ComplexTag_ComplexTag_4
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_01 RUN
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_02 RUN
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_03 RUN
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_04 RUN
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_05 RUN
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_06 RUN
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_07 RUN
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_08 RUN
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_09 RUN
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_10 RUN
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_01 RUN
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_02 RUN
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_03 RUN
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_04 RUN
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_05 RUN
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_06 RUN
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_07 RUN
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_08 RUN
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_01 RUN
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_02 RUN
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_03 RUN
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 RUN
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 RUN
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 RUN
 
 #define GTEST_COUT std::cerr << " ! ! ! \n"
 
@@ -57,7 +66,7 @@
 // obj init
 
 TEST(ComplexTag, ComplexTag_1) {
-#if DO_TEST_ComplexTag_ComplexTag_1 == 0
+#if DO_TEST_ComplexTag_ComplexTag_01 == 0
 	GTEST_SKIP();
 #endif
 	std::string resp = "<body><div><p>General Kenobi</p></div><span>4.4</span><div><p>Hello There</p><p class = \"Dog\">Hello There</p></div><p class=\"Cat\">Han Solo</p><div><p>Grives</p></div></body>";
@@ -65,15 +74,12 @@ TEST(ComplexTag, ComplexTag_1) {
 	filter.first = "p";
 	filter.second;
 	HResponse lastResponse{ &resp, filter };
-	std::string ret = lastResponse.GetData();
-	GTEST_COUT << ret.c_str() << std::endl;
-	EXPECT_EQ(lastResponse.GetData(), "General Kenobi");
-
-	std::string rura;	
+	EXPECT_EQ(lastResponse.GetFirstData(), "General Kenobi");
+	EXPECT_EQ(lastResponse.GetLastData(), "Grives");
 }
 
 TEST(ComplexTag, ComplexTag_2) {
-#if DO_TEST_ComplexTag_ComplexTag_2 == 0
+#if DO_TEST_ComplexTag_ComplexTag_02 == 0
 	GTEST_SKIP();
 #endif
 	std::string resp = "<body><div><p>General Kenobi</p></div><span>4.4</span><div><p>Hello There</p><p class = \"Dog\">Hello There</p></div><p class=\"Cat\">Han Solo</p><div><p>Grives</p></div></body>";
@@ -81,13 +87,12 @@ TEST(ComplexTag, ComplexTag_2) {
 	filter.first = "p";
 	filter.second["class"] = "Dog";
 	HResponse lastResponse{ &resp, filter };
-	std::string ret = lastResponse.GetData();
-	GTEST_COUT << ret.c_str() << std::endl;
-	EXPECT_EQ(lastResponse.GetData(), "Hello There");
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "Hello There");
 }
 
 TEST(ComplexTag, ComplexTag_3) {
-#if DO_TEST_ComplexTag_ComplexTag_3 == 0
+#if DO_TEST_ComplexTag_ComplexTag_03 == 0
 	GTEST_SKIP();
 #endif
 	std::string resp = "<body><div><p>General Kenobi</p></div><span>4.4</span><div><p>Hello There</p><p class = \"Dog\">Hello There</p></div><p class=\"Cat\">Han Solo</p><div><p>Grives</p></div></body>";
@@ -95,13 +100,12 @@ TEST(ComplexTag, ComplexTag_3) {
 	filter.first = "p";
 	filter.second["class"] = "Cat";
 	HResponse lastResponse{ &resp, filter };
-	std::string ret = lastResponse.GetData();
-	GTEST_COUT << ret.c_str() << std::endl;
-	EXPECT_EQ(lastResponse.GetData(), "Han Solo");
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "Han Solo");
 }
 
 TEST(ComplexTag, ComplexTag_4) {
-#if DO_TEST_ComplexTag_ComplexTag_4 == 0
+#if DO_TEST_ComplexTag_ComplexTag_04 == 0
 	GTEST_SKIP();
 #endif
 	// <p></p> inside
@@ -110,13 +114,12 @@ TEST(ComplexTag, ComplexTag_4) {
 	filter.first = "p";
 	filter.second["class"] = "Cat";
 	HResponse lastResponse{ &resp, filter };
-	std::string ret = lastResponse.GetData();
-	GTEST_COUT << ret.c_str() << std::endl;
-	EXPECT_EQ(lastResponse.GetData(), "Han <p>nothing</p>Solo");
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "Han <p>nothing</p>Solo");
 }
 
 TEST(ComplexTag, ComplexTag_5) {
-#if DO_TEST_ComplexTag_ComplexTag_5 == 0
+#if DO_TEST_ComplexTag_ComplexTag_05 == 0
 	GTEST_SKIP();
 #endif
 	// </p> inside, no open exists
@@ -125,13 +128,12 @@ TEST(ComplexTag, ComplexTag_5) {
 	filter.first = "p";
 	filter.second["class"] = "Cat";
 	HResponse lastResponse{ &resp, filter };
-	std::string ret = lastResponse.GetData();
-	GTEST_COUT << ret.c_str() << std::endl;
-	EXPECT_EQ(lastResponse.GetData(), "Han ");
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "Han ");
 }
 
 TEST(ComplexTag, ComplexTag_6) {
-#if DO_TEST_ComplexTag_ComplexTag_6 == 0
+#if DO_TEST_ComplexTag_ComplexTag_06 == 0
 	GTEST_SKIP();
 #endif
 	// <p> inside, no close exists
@@ -140,9 +142,82 @@ TEST(ComplexTag, ComplexTag_6) {
 	filter.first = "p";
 	filter.second["class"] = "Cat";
 	HResponse lastResponse{ &resp, filter };
-	std::string ret = lastResponse.GetData();
-	GTEST_COUT << ret.c_str() << std::endl;
-	EXPECT_EQ(lastResponse.GetData(), "Han <p>Solo</p><div><p>Grives");
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "Han <p>Solo</p><div><p>Grives");
+}
+
+TEST(ComplexTag, ComplexTag_7) {
+#if DO_TEST_ComplexTag_ComplexTag_07 == 0
+	GTEST_SKIP();
+#endif
+	// looking for tag does not exists
+	std::string resp = "<body><div></div><span>4.4</span><div></div><div></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second;
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "UPS");
+}
+
+TEST(ComplexTag, ComplexTag_8) {
+#if DO_TEST_ComplexTag_ComplexTag_08 == 0
+	GTEST_SKIP();
+#endif
+	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrValues #1
+	std::string resp = "<body><div><p id=12 class=\"XWING\">Hello There</p><p >General Kenobi</p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "11";
+	filter.second["class"] = "XWING";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "UPS");
+}
+
+TEST(ComplexTag, ComplexTag_9) {
+#if DO_TEST_ComplexTag_ComplexTag_09 == 0
+	GTEST_SKIP();
+#endif
+	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrValues #2
+	std::string resp = "<body><div><p id=11 class=\"Lawbringer\">Hello There</p><p >General Kenobi</p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "11";
+	filter.second["class"] = "XWING";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "UPS");
+}
+
+TEST(ComplexTag, ComplexTag_10) {
+#if DO_TEST_ComplexTag_ComplexTag_10 == 0
+	GTEST_SKIP();
+#endif
+	// cover CRC for tests 8 and 9
+	std::string resp = "<body><div><p id=11 class=\"XWING\">Hello There</p><p >General Kenobi</p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "11";
+	filter.second["class"] = "XWING";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "Hello There");
+}
+
+TEST(ComplexTag, ComplexTag_11) {
+#if DO_TEST_ComplexTag_ComplexTag_11 == 0
+	GTEST_SKIP();
+#endif
+	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrNames
+	std::string resp = "<body><div><p id=12>Hello There</p><p class=\"XWING\">General Kenobi</p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "11";
+	filter.second["class"] = "XWING";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "UPS");
 }
 
 
