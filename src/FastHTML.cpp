@@ -16,7 +16,7 @@
 // STATIC PROTOTYPES
 
 static std::string RemoveSpaces(std::string);
-static std::string StickPrefixWithTag(std::string);
+static std::string StickPrefixWithTag(std::string statement);
 static size_t FindWhitespace(const std::string, const size_t);
 static bool HasAnyAttr(const std::string statement, const std::string openTagName);
 static bool RequireAnyAttr(const std::map<std::string, std::string>);
@@ -26,7 +26,7 @@ static size_t GetNextOpenTagCloseIndex(const std::string*, const std::string, co
 static std::string ExtractStatement(const std::string*, const size_t, const size_t);
 static bool CheckReqAttrExists(const std::string statement, const std::map<std::string, std::string> dict);
 static bool CheckAttrsAreValid(const std::string statement, const std::string openTagName, const std::map<std::string, std::string> dict);
-static std::string ExtractDataTagWithAttr(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName);
+static std::string ExtractData(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName);
 
 
 // CTOR/DTOR
@@ -64,7 +64,7 @@ HResponse::HResponse(const std::string* body, std::pair<std::string, std::map<st
 				continue;
 			}
 
-			occurrence.push_back(ExtractDataTagWithAttr(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName));
+			occurrence.push_back(ExtractData(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName));
 		}
 
 		openTagOpenIndex = body->find(openTagName, openTagOpenIndex + openTagName.size());
@@ -101,7 +101,7 @@ std::list<std::string> HResponse::GetListedData()
 
 // FUNCTIONS
 
-std::string ClearOtherTags(std::string dataWithTags)
+std::string ClearOtherTags(std::string _statement)
 {
 	size_t openTagOpenCharacterIndex = 0;
 	size_t openTagCloseCharacterIndex = 0;
@@ -113,7 +113,7 @@ std::string ClearOtherTags(std::string dataWithTags)
 	const std::string closePrefixStr = "</";
 	const std::string openPrefixStr = "<";
 	
-	std::string statement = StickPrefixWithTag(dataWithTags);
+	std::string statement = StickPrefixWithTag(_statement);
 
 	while (true)
 	{
@@ -280,7 +280,7 @@ static bool CheckAttrsAreValid(const std::string statement, const std::string op
 	return attrsAreValid;
 }
 
-static std::string ExtractDataTagWithAttr(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName)
+static std::string ExtractData(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName)
 {
 	size_t nextRedundantOpenTagIndex = body->substr(openTagCloseIndex + 1, closeTagOpenIndex - (openTagCloseIndex + 1)).find(openTagName);
 	if (nextRedundantOpenTagIndex != std::string::npos)
@@ -325,5 +325,40 @@ size_t GtestWrapper_FastHTML_FindWhitespace(std::string str, size_t offset = 0)
 {
 	return FindWhitespace(str, offset);
 }
+bool GtestWrapper_FastHTML_HasAnyAttr(const std::string statement, const std::string openTagName)
+{
+	return HasAnyAttr(statement, openTagName);
+}
+bool GtestWrapper_FastHTML_RequireAnyAttr(const std::map<std::string, std::string> dict)
+{
+	return RequireAnyAttr(dict);
+}
+std::tuple<size_t, size_t> GtestWrapper_FastHTML_GetOpenTagIndexes(const std::string* body, const std::string openTagName)
+{
+	return GetOpenTagIndexes(body, openTagName);
+}
+size_t GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
+{
+	return GetNextOpenTagOpenIndex(body, openTagName, openTagOpenIndex);
+}
+size_t GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
+{
+	return GetNextOpenTagCloseIndex(body, openTagName, openTagOpenIndex);
+}
+std::string GtestWrapper_FastHTML_ExtractStatement(const std::string* body, const size_t openTagOpenIndex, const size_t openTagCloseIndex)
+{
+	return ExtractStatement(body, openTagOpenIndex, openTagCloseIndex);
+}
+bool GtestWrapper_FastHTML_CheckReqAttrExists(const std::string statement, const std::map<std::string, std::string> dict)
+{
+	return CheckReqAttrExists(statement, dict);
+}
+bool GtestWrapper_FastHTML_CheckAttrsAreValid(const std::string statement, const std::string openTagName, const std::map<std::string, std::string> dict)
+{
+	return CheckAttrsAreValid(statement, openTagName, dict);
+}
+std::string GtestWrapper_FastHTML_ExtractData(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName)
+{
+	return ExtractData(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName);
+}
 #endif
-
