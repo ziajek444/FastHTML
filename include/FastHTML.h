@@ -15,8 +15,11 @@ std::string ClearOtherTags(const std::string dataWithTags);
 class HResponse
 {
 public:
-	HResponse(const std::string* body, std::pair<std::string, std::map<std::string, std::string>> filter);
+	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter);
+	HResponse(const std::string* body, const std::string tag);
+	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter[], size_t n);
 	virtual ~HResponse();
+
 
 	std::string GetLastData();
 	std::string GetFirstData();

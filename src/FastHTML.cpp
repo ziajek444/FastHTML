@@ -31,7 +31,7 @@ static std::string ExtractData(const std::string* body, const size_t openTagClos
 
 // CTOR/DTOR
 
-HResponse::HResponse(const std::string* body, std::pair<std::string, std::map<std::string, std::string>> filter)
+HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter)
 {
 	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
@@ -71,6 +71,43 @@ HResponse::HResponse(const std::string* body, std::pair<std::string, std::map<st
 		openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 	} // WHILE
 }
+
+HResponse::HResponse(const std::string* body, const std::string tag)
+{
+	const std::string openTagName = '<' + tag;
+	const std::string closeTagName = "</" + tag;
+	auto [openTagOpenIndex, openTagCloseIndex] = GetOpenTagIndexes(body, openTagName);
+
+	while (openTagOpenIndex != std::string::npos) {
+		std::string statement = body->substr(openTagOpenIndex, openTagCloseIndex - openTagOpenIndex + 1);  // <tag ... ... >
+		statement = RemoveSpaces(statement);  // <tag...>
+
+		bool hasAnyAttr = HasAnyAttr(statement, openTagName);
+
+		if (!hasAnyAttr) {
+			size_t closeTagOpenIndex = body->find(closeTagName, openTagCloseIndex + 1);
+			if (closeTagOpenIndex == std::string::npos) throw std::length_error("Missing close tag in html statement");
+
+			if (openTagCloseIndex + 1 == closeTagOpenIndex) { //there is no data
+				openTagOpenIndex = GetNextOpenTagOpenIndex(body, openTagName, openTagOpenIndex);
+				openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagName, openTagOpenIndex);
+				occurrence.push_back("");
+				continue;
+			}
+
+			occurrence.push_back(ExtractData(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName));
+		}
+
+		openTagOpenIndex = body->find(openTagName, openTagOpenIndex + openTagName.size());
+		openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
+	} // WHILE
+}
+
+HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filterArr[], size_t n)
+{
+	std::cout << sizeof(filterArr) << " : " << n << std::endl;
+}
+
 
 HResponse::~HResponse()
 {
