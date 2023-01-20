@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <tuple>
+#include <thread>
 
 
 // STATIC PROTOTYPES
@@ -30,6 +31,15 @@ static std::string ExtractData(const std::string* body, const size_t openTagClos
 
 
 // CTOR/DTOR
+
+void JfillVect(std::string partBody, std::vector<std::pair<size_t, size_t>> &refVect)
+{
+	size_t asdf;
+	/* sdf
+	* <body><tag1><tag2><p1></p1></tag2><tag2><p></p><>
+	* https://en.cppreference.com/w/cpp/thread/jthread/jthread
+	*/
+}
 
 HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter)
 {
@@ -70,6 +80,13 @@ HResponse::HResponse(const std::string* body, const std::pair<std::string, std::
 		openTagOpenIndex = body->find(openTagName, openTagOpenIndex + openTagName.size());
 		openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 	} // WHILE
+}
+
+HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg)
+{
+	std::vector<std::pair<size_t, size_t>> tagOpenClosePairs;
+	std::jthread t0(JfillVect, std::ref(localVect1));
+	std::jthread t1(JfillVect, std::ref(localVect2));
 }
 
 HResponse::HResponse(const std::string* body, const std::string tag)

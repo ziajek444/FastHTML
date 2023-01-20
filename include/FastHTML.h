@@ -16,6 +16,7 @@ class HResponse
 {
 public:
 	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter);
+	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg);
 	HResponse(const std::string* body, const std::string tag);
 	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter[], size_t n);
 	virtual ~HResponse();
