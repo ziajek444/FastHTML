@@ -119,9 +119,13 @@ HResponse::HResponse(const std::string* body, const std::pair<std::string, std::
 
 HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg)
 {
-	//const size_t minResonableSize = 8192;
+	const std::string tag = RemoveSpaces(filter.first);
+	const std::string openTagName = '<' + tag;
+	const std::string closeTagName = "</" + tag;
+	const size_t minResonableSize = 0xffffff; //~1.5mb
 	const size_t bodySize = body->size();
 	unsigned int numCPU;
+
 #if defined(_WIN32) || defined(_WIN64)
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo(&sysinfo);
@@ -130,28 +134,21 @@ HResponse::HResponse(const std::string* body, const std::pair<std::string, std::
 	numCPU = std::thread::hardware_concurrency();
 #endif
 
+	if (bodySize < minResonableSize) numCPU = 1;
+	else numCPU = numCPU >= 2 ? numCPU : 2;
 	
-	/*while (bodySize < numCPU * minResonableSize && numCPU > 2) {
-		numCPU--;
-	}*/
-	//numCPU = numCPU >= 2 ? numCPU : 2;
-	numCPU = 4;
 	size_t count = bodySize / numCPU;
 	size_t startIndex = 0;
 
 	std::vector<std::thread> threadsVector;
-	//std::vector<std::pair<size_t, size_t>> tagOpenClosePairs;
 	std::vector<size_t> tagOpenClosePairs;
 	std::mutex mtx;
 
 	while (--numCPU)
 	{
-		//std::thread thx{ JfillVect, body->substr(startIndex, count), "<tag", std::ref(tagOpenClosePairs) };
-		threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex, count), startIndex, "<tag", &tagOpenClosePairs, &mtx });  // emplace_back
-		startIndex += count - 3; // TODO openTagName size - 1
-
+		threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex, count), startIndex, "<tag", &tagOpenClosePairs, &mtx });
+		startIndex += count - (openTagName.size() - 1);
 	}
-	//std::thread thx{ JfillVect, body->substr(startIndex), "<tag", std::ref(tagOpenClosePairs) };
 	threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex), startIndex, "<tag", &tagOpenClosePairs, &mtx });
 
 	for (auto& thd : threadsVector) {

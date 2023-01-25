@@ -1,0 +1,3 @@
+C:/Users/ziajek444/Desktop/Programowanie/someones git/FastHTML/FastHTML/build/_deps/googletest-subbuild/CMakeFiles/googletest-populate.dir
+C:/Users/ziajek444/Desktop/Programowanie/someones git/FastHTML/FastHTML/build/_deps/googletest-subbuild/CMakeFiles/ALL_BUILD.dir
+C:/Users/ziajek444/Desktop/Programowanie/someones git/FastHTML/FastHTML/build/_deps/googletest-subbuild/CMakeFiles/ZERO_CHECK.dir
