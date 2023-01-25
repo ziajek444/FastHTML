@@ -20,7 +20,9 @@ int main()
 	using std::chrono::milliseconds;
 
 	std::pair<std::string, std::map<std::string, std::string>> filter;
-	ifstream f("..\\..\\..\\testsdata\\response.html");  // 50.4 MB
+	filter.first = "<span";
+
+	ifstream f("..\\..\\..\\testsdata\\investing.html");  // 1 MB
 	std::string str;
 	if (f) {
 		std::cout << "read file \n";
@@ -65,162 +67,17 @@ int main()
 
 	// JfillVect_time #1
 	t1 = high_resolution_clock::now();
+	std::vector<size_t> tagOpenClosePairs;
 	for (int i = 0; i < 100; i++) {
-		std::vector<size_t> tagOpenClosePairs;
-		JfillVect_time(str, "<tag", &tagOpenClosePairs);
+		tagOpenClosePairs.clear();
+		JfillVect_time(str, "<span", &tagOpenClosePairs);
 	}
 	t2 = high_resolution_clock::now();
 
 	ms_double = t2 - t1;
 	std::cout << "JfillVect_time #1: " << ms_double.count() << "ms\n";
+	std::cout << str.substr(250187, 16);
 	//  -  -  -  -  -
-
-
-
-	// !! 
-	std::cout << "\n\n";
-	str.resize(str.size() / 2);
-	std::cout << "response size: " << str.size() << "\n";
-	// !!
-
-
-
-	// HResponse hr2(&str, filter, true) #2
-	t1 = high_resolution_clock::now();
-	for (int i = 0; i < 100; i++) {
-		HResponse hr2(&str, filter, true);
-	}
-	t2 = high_resolution_clock::now();
-
-	ms_double = t2 - t1;
-	std::cout << "HResponse #2: " << ms_double.count() << "ms\n";
-	//  -  -  -  -  -
-
-
-
-	// JfillVect_time #2
-	t1 = high_resolution_clock::now();
-	for (int i = 0; i < 100; i++) {
-		std::vector<size_t> tagOpenClosePairs;
-		JfillVect_time(str, "<tag", &tagOpenClosePairs);
-	}
-	t2 = high_resolution_clock::now();
-
-	ms_double = t2 - t1;
-	std::cout << "JfillVect_time #2: " << ms_double.count() << "ms\n";
-	//  -  -  -  -  -
-
-
-
-	// !! 
-	std::cout << "\n\n";
-	str.resize(str.size() / 2);
-	std::cout << "response size: " << str.size() << "\n";
-	// !!
-
-
-
-	// HResponse hr2(&str, filter, true) #3
-	t1 = high_resolution_clock::now();
-	for (int i = 0; i < 100; i++) {
-		HResponse hr2(&str, filter, true);
-	}
-	t2 = high_resolution_clock::now();
-
-	ms_double = t2 - t1;
-	std::cout << "HResponse #3: " << ms_double.count() << "ms\n";
-	//  -  -  -  -  -
-
-
-
-	// JfillVect_time #3
-	t1 = high_resolution_clock::now();
-	for (int i = 0; i < 100; i++) {
-		std::vector<size_t> tagOpenClosePairs;
-		JfillVect_time(str, "<tag", &tagOpenClosePairs);
-	}
-	t2 = high_resolution_clock::now();
-
-	ms_double = t2 - t1;
-	std::cout << "JfillVect_time #3: " << ms_double.count() << "ms\n";
-	//  -  -  -  -  -
-
-
-
-	// !! 
-	std::cout << "\n\n";
-	str.resize(str.size() / 2);
-	std::cout << "response size: " << str.size() << "\n";
-	// !!
-
-
-
-	// HResponse hr2(&str, filter, true) #4
-	t1 = high_resolution_clock::now();
-	for (int i = 0; i < 100; i++) {
-		HResponse hr2(&str, filter, true);
-	}
-	t2 = high_resolution_clock::now();
-
-	ms_double = t2 - t1;
-	std::cout << "HResponse #4: " << ms_double.count() << "ms\n";
-	//  -  -  -  -  -
-
-
-
-	// JfillVect_time #4
-	t1 = high_resolution_clock::now();
-	for (int i = 0; i < 100; i++) {
-		std::vector<size_t> tagOpenClosePairs;
-		JfillVect_time(str, "<tag", &tagOpenClosePairs);
-	}
-	t2 = high_resolution_clock::now();
-
-	ms_double = t2 - t1;
-	std::cout << "JfillVect_time #4: " << ms_double.count() << "ms\n";
-	//  -  -  -  -  -
-
-
-
-	// !! 
-	std::cout << "\n\n";
-	str.resize(str.size() / 2);
-	std::cout << "response size: " << str.size() << "\n";
-	// !!
-
-
-
-	// HResponse hr2(&str, filter, true) #5
-	t1 = high_resolution_clock::now();
-	for (int i = 0; i < 100; i++) {
-		HResponse hr2(&str, filter, true);
-	}
-	t2 = high_resolution_clock::now();
-
-	ms_double = t2 - t1;
-	std::cout << "HResponse #5: " << ms_double.count() << "ms\n";
-	//  -  -  -  -  -
-
-
-
-	// JfillVect_time #5
-	t1 = high_resolution_clock::now();
-	for (int i = 0; i < 100; i++) {
-		std::vector<size_t> tagOpenClosePairs;
-		JfillVect_time(str, "<tag", &tagOpenClosePairs);
-	}
-	t2 = high_resolution_clock::now();
-
-	ms_double = t2 - t1;
-	std::cout << "JfillVect_time #5: " << ms_double.count() << "ms\n";
-	//  -  -  -  -  -
-
-
-
-
-	std::cout << "\n\n";
-
-
 
 
 

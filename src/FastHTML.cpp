@@ -46,7 +46,6 @@ void JfillVect_time(std::string partBody, std::string openTagName, std::vector<s
 		found = partBody.find(openTagName, found);
 		if (found != std::string::npos) {
 			refVect->push_back(found);
-			//std::cout << std::this_thread::get_id() << " : " << found << " : " << partBody.substr(found, 5) << " \n";
 			found++;
 		}
 		else { break; }
@@ -63,7 +62,6 @@ void JfillVect(std::string partBody, size_t offset, std::string openTagName, std
 		found = partBody.find(openTagName, found);
 		if (found != std::string::npos) {
 			tmpVector.push_back(found + offset);
-			//std::cout << std::this_thread::get_id() << " : " << found << " : " << partBody.substr(found, 5) << " \n";
 			found++;
 		}
 		else { break; }
@@ -134,32 +132,40 @@ HResponse::HResponse(const std::string* body, const std::pair<std::string, std::
 	numCPU = std::thread::hardware_concurrency();
 #endif
 
-	if (bodySize < minResonableSize) numCPU = 1;
-	else numCPU = numCPU >= 2 ? numCPU : 2;
-	
-	size_t count = bodySize / numCPU;
-	size_t startIndex = 0;
-
-	std::vector<std::thread> threadsVector;
-	std::vector<size_t> tagOpenClosePairs;
-	std::mutex mtx;
-
-	while (--numCPU)
-	{
-		threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex, count), startIndex, "<tag", &tagOpenClosePairs, &mtx });
-		startIndex += count - (openTagName.size() - 1);
+	//if (bodySize < minResonableSize) numCPU = 1;
+	//else 
+	std::vector<size_t> tagOpenOpenIndexOccurrences;
+	numCPU = numCPU >= 2 ? numCPU : 2;
+	if (bodySize < minResonableSize) {
+		JfillVect_time(*body, openTagName, &tagOpenOpenIndexOccurrences);
 	}
-	threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex), startIndex, "<tag", &tagOpenClosePairs, &mtx });
+	else {
 
-	for (auto& thd : threadsVector) {
-		thd.join();
+		size_t count = bodySize / numCPU;
+		size_t startIndex = 0;
+
+		std::vector<std::thread> threadsVector;
+
+		std::mutex mtx;
+
+		while (--numCPU)
+		{
+			threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex, count), startIndex, openTagName, &tagOpenOpenIndexOccurrences, &mtx });
+			startIndex += count - (openTagName.size() - 1);
+		}
+		threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex), startIndex, openTagName, &tagOpenOpenIndexOccurrences, &mtx });
+
+		for (auto& thd : threadsVector) {
+			thd.join();
+		}
+
+		//std::cout << "here \n";
+		//for (auto e : tagOpenOpenIndexOccurrences)
+		//{
+		//	std::cout <<" go: " << e << std::endl;
+		//}
 	}
-
-	//std::cout << "here \n";
-	//for (auto e : tagOpenClosePairs)
-	//{
-	//	std::cout <<" go: " << e << std::endl;
-	//}
+	// TODO what next? I have all occurnces of searching tag in "tagOpenOpenIndexOccurrences"
 }
 
 HResponse::HResponse(const std::string* body, const std::string tag)
