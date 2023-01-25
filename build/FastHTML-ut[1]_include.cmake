@@ -1,5 +1,0 @@
-if(EXISTS "C:/Users/ziajek444/Desktop/Programowanie/someones git/FastHTML/FastHTML/build/FastHTML-ut[1]_tests.cmake")
-  include("C:/Users/ziajek444/Desktop/Programowanie/someones git/FastHTML/FastHTML/build/FastHTML-ut[1]_tests.cmake")
-else()
-  add_test(FastHTML-ut_NOT_BUILT FastHTML-ut_NOT_BUILT)
-endif()
