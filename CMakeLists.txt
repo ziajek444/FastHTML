@@ -12,6 +12,10 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET FastHTML PROPERTY CXX_STANDARD 20)
 endif()
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(FastHTML PRIVATE Threads::Threads)
+
 # TODO: Add tests and install targets if needed.
 
 # GoogleTest requires at least C++14

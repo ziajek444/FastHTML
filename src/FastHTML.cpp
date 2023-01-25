@@ -1,5 +1,9 @@
 ﻿// FastHTML.cpp : Defines the entry point for the application.
 // v0.9.99
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+#include <sysinfoapi.h>
+#endif
 
 #ifdef CUSTOM_GOOGLE_TEST_DEF
 //#include "../include/tests.hpp"
@@ -12,6 +16,8 @@
 #include <stdexcept>
 #include <tuple>
 #include <thread>
+#include <mutex>
+
 
 
 // STATIC PROTOTYPES
@@ -23,7 +29,7 @@ static bool HasAnyAttr(const std::string statement, const std::string openTagNam
 static bool RequireAnyAttr(const std::map<std::string, std::string>);
 static std::tuple<size_t, size_t> GetOpenTagIndexes(const std::string* body, const std::string openTagName);
 static size_t GetNextOpenTagOpenIndex(const std::string*, const std::string, const size_t);
-static size_t GetNextOpenTagCloseIndex(const std::string*, const std::string, const size_t);
+static size_t GetNextOpenTagCloseIndex(const std::string*, const size_t);
 static std::string ExtractStatement(const std::string*, const size_t, const size_t);
 static bool CheckReqAttrExists(const std::string statement, const std::map<std::string, std::string> dict);
 static bool CheckAttrsAreValid(const std::string statement, const std::string openTagName, const std::map<std::string, std::string> dict);
@@ -31,14 +37,43 @@ static std::string ExtractData(const std::string* body, const size_t openTagClos
 
 
 // CTOR/DTOR
-
-void JfillVect(std::string partBody, std::vector<std::pair<size_t, size_t>> &refVect)
+void JfillVect_time(std::string partBody, std::string openTagName, std::vector<size_t>* refVect)
 {
-	size_t asdf;
-	/* sdf
-	* <body><tag1><tag2><p1></p1></tag2><tag2><p></p><>
-	* https://en.cppreference.com/w/cpp/thread/jthread/jthread
-	*/
+	size_t found = 0;
+	size_t id = 1;
+	std::vector<size_t> tmpVector;
+	while (true) {
+		found = partBody.find(openTagName, found);
+		if (found != std::string::npos) {
+			refVect->push_back(found);
+			//std::cout << std::this_thread::get_id() << " : " << found << " : " << partBody.substr(found, 5) << " \n";
+			found++;
+		}
+		else { break; }
+	}
+}
+
+
+void JfillVect(std::string partBody, size_t offset, std::string openTagName, std::vector<size_t> *refVect, std::mutex *mtx)
+{
+	size_t found = 0;
+	size_t id = 1;
+	std::vector<size_t> tmpVector;
+	while (true) {
+		found = partBody.find(openTagName, found);
+		if (found != std::string::npos) {
+			tmpVector.push_back(found + offset);
+			//std::cout << std::this_thread::get_id() << " : " << found << " : " << partBody.substr(found, 5) << " \n";
+			found++;
+		}
+		else { break; }
+	}
+
+	std::vector<size_t> copyVector;
+	mtx->lock();
+	std::merge(tmpVector.begin(), tmpVector.end(), refVect->begin(), refVect->end(), std::back_inserter(copyVector));
+	*refVect = copyVector;
+	mtx->unlock();
 }
 
 HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter)
@@ -58,7 +93,7 @@ HResponse::HResponse(const std::string* body, const std::pair<std::string, std::
 		if (reqAnyAttr && hasAnyAttr) {
 			if (!CheckReqAttrExists(statement, filter.second) || !CheckAttrsAreValid(statement, openTagName, filter.second)) {
 				openTagOpenIndex = GetNextOpenTagOpenIndex(body, openTagName, openTagOpenIndex);
-				openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagName, openTagOpenIndex);
+				openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
 				continue;
 			}
 		}
@@ -69,7 +104,7 @@ HResponse::HResponse(const std::string* body, const std::pair<std::string, std::
 
 			if (openTagCloseIndex + 1 == closeTagOpenIndex) { //there is no data
 				openTagOpenIndex = GetNextOpenTagOpenIndex(body, openTagName, openTagOpenIndex);
-				openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagName, openTagOpenIndex);
+				openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
 				occurrence.push_back("");
 				continue;
 			}
@@ -84,9 +119,50 @@ HResponse::HResponse(const std::string* body, const std::pair<std::string, std::
 
 HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg)
 {
-	std::vector<std::pair<size_t, size_t>> tagOpenClosePairs;
-	std::jthread t0(JfillVect, std::ref(localVect1));
-	std::jthread t1(JfillVect, std::ref(localVect2));
+	//const size_t minResonableSize = 8192;
+	const size_t bodySize = body->size();
+	unsigned int numCPU;
+#if defined(_WIN32) || defined(_WIN64)
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+	numCPU = sysinfo.dwNumberOfProcessors;
+#else*/
+	numCPU = std::thread::hardware_concurrency();
+#endif
+
+	
+	/*while (bodySize < numCPU * minResonableSize && numCPU > 2) {
+		numCPU--;
+	}*/
+	//numCPU = numCPU >= 2 ? numCPU : 2;
+	numCPU = 4;
+	size_t count = bodySize / numCPU;
+	size_t startIndex = 0;
+
+	std::vector<std::thread> threadsVector;
+	//std::vector<std::pair<size_t, size_t>> tagOpenClosePairs;
+	std::vector<size_t> tagOpenClosePairs;
+	std::mutex mtx;
+
+	while (--numCPU)
+	{
+		//std::thread thx{ JfillVect, body->substr(startIndex, count), "<tag", std::ref(tagOpenClosePairs) };
+		threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex, count), startIndex, "<tag", &tagOpenClosePairs, &mtx });  // emplace_back
+		startIndex += count - 3; // TODO openTagName size - 1
+
+	}
+	//std::thread thx{ JfillVect, body->substr(startIndex), "<tag", std::ref(tagOpenClosePairs) };
+	threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex), startIndex, "<tag", &tagOpenClosePairs, &mtx });
+
+	for (auto& thd : threadsVector) {
+		thd.join();
+	}
+
+	//std::cout << "here \n";
+	//for (auto e : tagOpenClosePairs)
+	//{
+	//	std::cout <<" go: " << e << std::endl;
+	//}
 }
 
 HResponse::HResponse(const std::string* body, const std::string tag)
@@ -107,7 +183,7 @@ HResponse::HResponse(const std::string* body, const std::string tag)
 
 			if (openTagCloseIndex + 1 == closeTagOpenIndex) { //there is no data
 				openTagOpenIndex = GetNextOpenTagOpenIndex(body, openTagName, openTagOpenIndex);
-				openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagName, openTagOpenIndex);
+				openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
 				occurrence.push_back("");
 				continue;
 			}
@@ -275,19 +351,21 @@ static bool RequireAnyAttr(const std::map<std::string, std::string> dict)
 static std::tuple<size_t, size_t> GetOpenTagIndexes(const std::string* body, const std::string openTagName)
 {
 	size_t openTagOpenIndex = body->find(openTagName);  // index { |<tag }
-	size_t openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
+	size_t openTagCloseIndex = openTagOpenIndex == std::string::npos ? openTagOpenIndex : body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 
 	return std::make_tuple(openTagOpenIndex, openTagCloseIndex);
 }
 
 static size_t GetNextOpenTagOpenIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
 {
+	if (openTagOpenIndex == std::string::npos) return std::string::npos;
+	if (openTagName.size() >= 0 && openTagOpenIndex + openTagName.size() < openTagOpenIndex) return std::string::npos;
 	return body->find(openTagName, openTagOpenIndex + openTagName.size());
 }
 
-static size_t GetNextOpenTagCloseIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
+static size_t GetNextOpenTagCloseIndex(const std::string* body, const size_t openTagOpenIndex)
 {
-	return body->find('>', openTagOpenIndex + openTagName.size());
+	return body->find('>', openTagOpenIndex);
 }
 
 static std::string ExtractStatement(const std::string* body, const size_t openTagOpenIndex, const size_t openTagCloseIndex)
@@ -395,9 +473,9 @@ size_t GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(const std::string* body, co
 {
 	return GetNextOpenTagOpenIndex(body, openTagName, openTagOpenIndex);
 }
-size_t GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
+size_t GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(const std::string* body, const size_t openTagOpenIndex)
 {
-	return GetNextOpenTagCloseIndex(body, openTagName, openTagOpenIndex);
+	return GetNextOpenTagCloseIndex(body, openTagOpenIndex);
 }
 std::string GtestWrapper_FastHTML_ExtractStatement(const std::string* body, const size_t openTagOpenIndex, const size_t openTagCloseIndex)
 {

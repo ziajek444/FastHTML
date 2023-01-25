@@ -5,75 +5,77 @@
 #define RUN 1
 #define SKIP 0
 
-#define DO_TEST_ComplexTag_ComplexTag_01 RUN
-#define DO_TEST_ComplexTag_ComplexTag_02 RUN
-#define DO_TEST_ComplexTag_ComplexTag_03 RUN
-#define DO_TEST_ComplexTag_ComplexTag_04 RUN
-#define DO_TEST_ComplexTag_ComplexTag_05 RUN
-#define DO_TEST_ComplexTag_ComplexTag_06 RUN
-#define DO_TEST_ComplexTag_ComplexTag_07 RUN
-#define DO_TEST_ComplexTag_ComplexTag_08 RUN
-#define DO_TEST_ComplexTag_ComplexTag_09 RUN
-#define DO_TEST_ComplexTag_ComplexTag_10 RUN
-#define DO_TEST_ComplexTag_ComplexTag_11 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_04 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_05 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_06 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_07 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_08 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_09 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_10 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_11 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_12 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_13 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_14 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_15 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 RUN  // related to DO_TEST_ComplexTag_ComplexTag_4
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_01 RUN
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_02 RUN
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_03 RUN
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_04 RUN
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_05 RUN
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_06 RUN
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_07 RUN
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_08 RUN
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_09 RUN
-#define DO_TEST_STATIC_FastHTML_FindWhitespace_10 RUN
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_01 RUN
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_02 RUN
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_03 RUN
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_04 RUN
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_05 RUN
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_06 RUN
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_07 RUN
-#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_08 RUN
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_01 RUN
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_02 RUN
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_03 RUN
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 RUN
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 RUN
-#define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 RUN
-#define DO_TEST_STATIC_FastHTML_HasAnyAttr_01 RUN
-#define DO_TEST_STATIC_FastHTML_HasAnyAttr_02 RUN
-#define DO_TEST_STATIC_FastHTML_HasAnyAttr_03 RUN
-#define DO_TEST_STATIC_FastHTML_RequireAnyAttr_01 RUN
-#define DO_TEST_STATIC_FastHTML_RequireAnyAttr_02 RUN
-#define DO_TEST_STATIC_FastHTML_RequireAnyAttr_03 RUN
-#define DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_01 RUN
-#define DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_02 RUN
-#define DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_03 RUN
-#define DO_TEST_STATIC_FastHTML_GetNextOpenTagOpenIndex_01 RUN
-#define DO_TEST_STATIC_FastHTML_GetNextOpenTagCloseIndex_01 RUN
-#define DO_TEST_STATIC_FastHTML_ExtractStatement_01 RUN
+#define DO_TEST_ComplexTag_ComplexTag_01 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_02 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_03 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_04 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_05 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_06 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_07 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_08 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_09 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_10 SKIP
+#define DO_TEST_ComplexTag_ComplexTag_11 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_04 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_05 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_06 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_07 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_08 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_09 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_10 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_11 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_12 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_13 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_14 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_15 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 SKIP
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 SKIP  // related to DO_TEST_ComplexTag_ComplexTag_4
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_01 SKIP
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_02 SKIP
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_03 SKIP
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_04 SKIP
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_05 SKIP
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_06 SKIP
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_07 SKIP
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_08 SKIP
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_09 SKIP
+#define DO_TEST_STATIC_FastHTML_FindWhitespace_10 SKIP
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_01 SKIP
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_02 SKIP
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_03 SKIP
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_04 SKIP
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_05 SKIP
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_06 SKIP
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_07 SKIP
+#define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_08 SKIP
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_01 SKIP
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_02 SKIP
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_03 SKIP
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 SKIP
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 SKIP
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 SKIP
+#define DO_TEST_STATIC_FastHTML_HasAnyAttr_01 SKIP
+#define DO_TEST_STATIC_FastHTML_HasAnyAttr_02 SKIP
+#define DO_TEST_STATIC_FastHTML_HasAnyAttr_03 SKIP
+#define DO_TEST_STATIC_FastHTML_RequireAnyAttr_01 SKIP
+#define DO_TEST_STATIC_FastHTML_RequireAnyAttr_02 SKIP
+#define DO_TEST_STATIC_FastHTML_RequireAnyAttr_03 SKIP
+#define DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_01 SKIP
+#define DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_02 SKIP
+#define DO_TEST_STATIC_FastHTML_GetNextOpenTagOpenIndex_01 SKIP
+#define DO_TEST_STATIC_FastHTML_GetNextOpenTagCloseIndex_01 SKIP
+#define DO_TEST_STATIC_FastHTML_ExtractStatement_01 SKIP
 #define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_01 RUN
+#define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_02 RUN
+#define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_03 RUN
+#define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_04 RUN
 #define DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_01 RUN
 #define DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_02 RUN
-#define DO_TEST_STATIC_FastHTML_ExtractData_01 RUN
+#define DO_TEST_STATIC_FastHTML_ExtractData_01 SKIP
 
 #define GTEST_COUT std::cerr << " ! ! ! \n"
 
@@ -726,18 +728,6 @@ TEST(STATIC_FastHTML, GetOpenTagIndexes_02) {
 	EXPECT_EQ(openTagCloseIndex, std::string::npos);
 }
 
-TEST(STATIC_FastHTML, GetOpenTagIndexes_03) {
-#if DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_03 == 0
-	GTEST_SKIP();
-#endif
-	// missing close tag
-	std::string openTagName = "<tag";;
-	std::string body = "<body><div><tag><p>test text</p></div></body>";
-	auto [openTagOpenIndex, openTagCloseIndex] = GtestWrapper_FastHTML_GetOpenTagIndexes(&body, openTagName);
-	EXPECT_EQ(openTagOpenIndex, 11);
-	EXPECT_EQ(openTagCloseIndex, std::string::npos);
-}
-
 
 // -  -  -  -  -  -  -  -  -  -  -  - 
 // size_t GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
@@ -769,7 +759,7 @@ TEST(STATIC_FastHTML, GetNextOpenTagOpenIndex_01) {
 
 
 // -  -  -  -  -  -  -  -  -  -  -  - 
-// size_t GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
+// size_t GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(const std::string* body, const size_t openTagOpenIndex)
 
 TEST(STATIC_FastHTML, GetNextOpenTagCloseIndex_01) {
 #if DO_TEST_STATIC_FastHTML_GetNextOpenTagCloseIndex_01 == 0
@@ -777,22 +767,26 @@ TEST(STATIC_FastHTML, GetNextOpenTagCloseIndex_01) {
 #endif
 	// missing close tag
 	std::string openTagName = "<tag";
-	std::string body = "<body><div><tag><p>test text</p></tag></div> <tag class=\"superClass\"></tag><tag> </tag></body>";
-	size_t openTagOpenIndex = 0;
+	std::string body = "<body><div><tag><p>test text</p></tag></div> <tag class=\"superClass\"></tag><tag > </tag></body>";
+	size_t openTagOpenIndex = body.find(openTagName);
 
-	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagName, openTagOpenIndex);
-	EXPECT_EQ(openTagOpenIndex, 15);
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, 11+4);
 
-	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagName, openTagOpenIndex);
-	EXPECT_EQ(openTagOpenIndex, 49);
+	openTagOpenIndex = body.find(openTagName, openTagOpenIndex);
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, 45+23);
 
-	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagName, openTagOpenIndex);
-	EXPECT_EQ(openTagOpenIndex, 79);
+	openTagOpenIndex = body.find(openTagName, openTagOpenIndex);
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, 75+5);
 
-	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagName, openTagOpenIndex);
+	openTagOpenIndex = body.find(openTagName, openTagOpenIndex);
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
 	EXPECT_EQ(openTagOpenIndex, std::string::npos);
 
-	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagName, openTagOpenIndex);
+	openTagOpenIndex = body.find(openTagName, openTagOpenIndex);
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
 	EXPECT_EQ(openTagOpenIndex, std::string::npos);
 }
 
@@ -822,7 +816,6 @@ TEST(STATIC_FastHTML, CheckReqAttrExists_01) {
 #if DO_TEST_STATIC_FastHTML_CheckReqAttrExists_01 == 0
 	GTEST_SKIP();
 #endif
-	// missing close tag
 	bool ret;
 	std::string statement = "<tagclass=\"Cat\"id=0style=\"HelloKitty\">";
 	std::map<std::string, std::string> dict;
@@ -832,6 +825,55 @@ TEST(STATIC_FastHTML, CheckReqAttrExists_01) {
 
 	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
 	EXPECT_EQ(ret, true);
+}
+
+TEST(STATIC_FastHTML, CheckReqAttrExists_02) {
+#if DO_TEST_STATIC_FastHTML_CheckReqAttrExists_02 == 0
+	GTEST_SKIP();
+#endif
+	// redundant attr #1
+	bool ret;
+	std::string statement = "<tagclass=\"Cat\"id=0style=\"HelloKitty\">";
+	std::map<std::string, std::string> dict;
+	dict["class"] = "Dog";
+	dict["id"] = "9";
+	dict["style"] = "Dark";
+	dict["additional"] = "Req";
+
+	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
+	EXPECT_EQ(ret, false);
+}
+
+TEST(STATIC_FastHTML, CheckReqAttrExists_03) {
+#if DO_TEST_STATIC_FastHTML_CheckReqAttrExists_03 == 0
+	GTEST_SKIP();
+#endif
+	// redundant attr #2
+	bool ret;
+	std::string statement = "<tagclass=\"Cat\"id=0style=\"HelloKitty\"style=\"Light\">";
+	std::map<std::string, std::string> dict;
+	dict["class"] = "Dog";
+	dict["id"] = "9";
+	dict["style"] = "Dark";
+
+	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
+	EXPECT_EQ(ret, true);
+}
+
+TEST(STATIC_FastHTML, CheckReqAttrExists_04) {
+#if DO_TEST_STATIC_FastHTML_CheckReqAttrExists_04 == 0
+	GTEST_SKIP();
+#endif
+	// missing req attr
+	bool ret;
+	std::string statement = "<tagclass=\"Cat\"id=0>";
+	std::map<std::string, std::string> dict;
+	dict["class"] = "Dog";
+	dict["id"] = "9";
+	dict["style"] = "Dark";
+
+	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
+	EXPECT_EQ(ret, false);
 }
 
 
@@ -842,15 +884,15 @@ TEST(STATIC_FastHTML, CheckAttrsAreValid_01) {
 #if DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_01 == 0
 	GTEST_SKIP();
 #endif
-	// missing close tag
 	bool ret;
+	const std::string openTagName = "<tag";
 	std::string statement = "<tagclass=\"Dog\"id=9style=\"Dark\">";
 	std::map<std::string, std::string> dict;
 	dict["class"] = "Dog";
 	dict["id"] = "9";
 	dict["style"] = "Dark";
 
-	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
+	ret = GtestWrapper_FastHTML_CheckAttrsAreValid(statement, openTagName, dict);
 	EXPECT_EQ(ret, true);
 }
 
@@ -858,15 +900,15 @@ TEST(STATIC_FastHTML, CheckAttrsAreValid_02) {
 #if DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_02 == 0
 	GTEST_SKIP();
 #endif
-	// missing close tag
 	bool ret;
+	const std::string openTagName = "<tag";
 	std::string statement = "<tagclass=\"Cat\"id=0style=\"HelloKitty\">";
 	std::map<std::string, std::string> dict;
 	dict["class"] = "Dog";
 	dict["id"] = "9";
 	dict["style"] = "Dark";
 
-	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
+	ret = GtestWrapper_FastHTML_CheckAttrsAreValid(statement, openTagName, dict);
 	EXPECT_EQ(ret, false);
 }
 

@@ -9,6 +9,8 @@
 #include <map>
 #include <list>
 
+#include <vector>
+
 std::string ClearOtherTags(const std::string dataWithTags);
 
 // TODO: Reference additional headers your program requires here.
@@ -30,6 +32,10 @@ private:
 	std::list<std::string> occurrence;
 };
 
+// TODO remove
+// execute time test
+void JfillVect_time(std::string partBody, std::string openTagName, std::vector<size_t>* refVect);
+
 #ifdef CUSTOM_GOOGLE_TEST_DEF
 std::string GtestWrapper_FastHTML_RemoveSpaces(std::string);
 std::string GtestWrapper_FastHTML_StickPrefixWithTag(std::string);
@@ -38,7 +44,7 @@ bool GtestWrapper_FastHTML_HasAnyAttr(const std::string, const std::string);
 bool GtestWrapper_FastHTML_RequireAnyAttr(const std::map<std::string, std::string>);
 std::tuple<size_t, size_t> GtestWrapper_FastHTML_GetOpenTagIndexes(const std::string*, const std::string);
 size_t GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(const std::string*, const std::string, const size_t);
-size_t GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(const std::string*, const std::string, const size_t);
+size_t GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(const std::string*, const size_t);
 std::string GtestWrapper_FastHTML_ExtractStatement(const std::string*, const size_t, const size_t);
 bool GtestWrapper_FastHTML_CheckReqAttrExists(const std::string, const std::map<std::string, std::string>);
 bool GtestWrapper_FastHTML_CheckAttrsAreValid(const std::string, const std::string, const std::map<std::string, std::string>);
