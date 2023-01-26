@@ -58,6 +58,24 @@
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 RUN
+#define DO_TEST_STATIC_FastHTML_HasAnyAttr_01 RUN
+#define DO_TEST_STATIC_FastHTML_HasAnyAttr_02 RUN
+#define DO_TEST_STATIC_FastHTML_HasAnyAttr_03 RUN
+#define DO_TEST_STATIC_FastHTML_RequireAnyAttr_01 RUN
+#define DO_TEST_STATIC_FastHTML_RequireAnyAttr_02 RUN
+#define DO_TEST_STATIC_FastHTML_RequireAnyAttr_03 RUN
+#define DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_01 RUN
+#define DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_02 RUN
+#define DO_TEST_STATIC_FastHTML_GetNextOpenTagOpenIndex_01 RUN
+#define DO_TEST_STATIC_FastHTML_GetNextOpenTagCloseIndex_01 RUN
+#define DO_TEST_STATIC_FastHTML_ExtractStatement_01 RUN
+#define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_01 RUN
+#define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_02 RUN
+#define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_03 RUN
+#define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_04 RUN
+#define DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_01 RUN
+#define DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_02 RUN
+#define DO_TEST_STATIC_FastHTML_ExtractData_01 RUN
 
 #define GTEST_COUT std::cerr << " ! ! ! \n"
 
@@ -615,3 +633,305 @@ TEST(STATIC_FastHTML, RemoveSpaces_06) {
 	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
 	EXPECT_EQ(ret, "");
 }
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// bool GtestWrapper_FastHTML_HasAnyAttr(const std::string statement, const std::string openTagName)
+
+TEST(STATIC_FastHTML, HasAnyAttr_01) {
+#if DO_TEST_STATIC_FastHTML_HasAnyAttr_01 == 0
+	GTEST_SKIP();
+#endif
+	std::string statement = "<tagstyle=\"Dark\">";
+	std::string openTagName = "<tag";
+	bool ret = GtestWrapper_FastHTML_HasAnyAttr(statement, openTagName);
+	EXPECT_EQ(ret, true);
+}
+
+TEST(STATIC_FastHTML, HasAnyAttr_02) {
+#if DO_TEST_STATIC_FastHTML_HasAnyAttr_02 == 0
+	GTEST_SKIP();
+#endif
+	std::string statement = "<tag>";
+	std::string openTagName = "<tag";
+	bool ret = GtestWrapper_FastHTML_HasAnyAttr(statement, openTagName);
+	EXPECT_EQ(ret, false);
+}
+
+TEST(STATIC_FastHTML, HasAnyAttr_03) {
+#if DO_TEST_STATIC_FastHTML_HasAnyAttr_03 == 0
+	GTEST_SKIP();
+#endif
+	std::string statement = "<tag/>";
+	std::string openTagName = "<tag";
+	bool ret = GtestWrapper_FastHTML_HasAnyAttr(statement, openTagName);
+	EXPECT_EQ(ret, false);
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// bool GtestWrapper_FastHTML_RequireAnyAttr(const std::map<std::string, std::string> dict)
+
+TEST(STATIC_FastHTML, RequireAnyAttr_01) {
+#if DO_TEST_STATIC_FastHTML_RequireAnyAttr_01 == 0
+	GTEST_SKIP();
+#endif
+	std::map<std::string, std::string> dict;
+	dict["attr"] = "val";
+	bool ret = GtestWrapper_FastHTML_RequireAnyAttr(dict);
+	EXPECT_EQ(ret, true);
+}
+
+TEST(STATIC_FastHTML, RequireAnyAttr_02) {
+#if DO_TEST_STATIC_FastHTML_RequireAnyAttr_02 == 0
+	GTEST_SKIP();
+#endif
+	std::map<std::string, std::string> dict;
+	dict["class"] = "customClass";
+	bool ret = GtestWrapper_FastHTML_RequireAnyAttr(dict);
+	EXPECT_EQ(ret, true);
+}
+
+TEST(STATIC_FastHTML, RequireAnyAttr_03) {
+#if DO_TEST_STATIC_FastHTML_RequireAnyAttr_03 == 0
+	GTEST_SKIP();
+#endif
+	std::map<std::string, std::string> dict;
+	bool ret = GtestWrapper_FastHTML_RequireAnyAttr(dict);
+	EXPECT_EQ(ret, false);
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// std::tuple<size_t, size_t> GtestWrapper_FastHTML_GetOpenTagIndexes(const std::string* body, const std::string openTagName)
+
+TEST(STATIC_FastHTML, GetOpenTagIndexes_01) {
+#if DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_01 == 0
+	GTEST_SKIP();
+#endif
+	std::string openTagName = "<tag";;
+	std::string body = "<body><div><tag><p>test text</p></tag></div></body>";
+	auto [openTagOpenIndex, openTagCloseIndex] = GtestWrapper_FastHTML_GetOpenTagIndexes(&body, openTagName);
+	EXPECT_EQ(openTagOpenIndex, 11);
+	EXPECT_EQ(openTagCloseIndex, 15);
+}
+
+TEST(STATIC_FastHTML, GetOpenTagIndexes_02) {
+#if DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_02 == 0
+	GTEST_SKIP();
+#endif
+	// missing tag
+	std::string openTagName = "<tag";;
+	std::string body = "<body><div><p>test text</p></div></body>";
+	auto [openTagOpenIndex, openTagCloseIndex] = GtestWrapper_FastHTML_GetOpenTagIndexes(&body, openTagName);
+	EXPECT_EQ(openTagOpenIndex, std::string::npos);
+	EXPECT_EQ(openTagCloseIndex, std::string::npos);
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// size_t GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(const std::string* body, const std::string openTagName, const size_t openTagOpenIndex)
+
+TEST(STATIC_FastHTML, GetNextOpenTagOpenIndex_01) {
+#if DO_TEST_STATIC_FastHTML_GetNextOpenTagOpenIndex_01 == 0
+	GTEST_SKIP();
+#endif
+	// missing close tag
+	std::string openTagName = "<tag";
+	std::string body = "<body><div><tag><p>test text</p></tag></div> <tag class=\"superClass\"></tag><tag> </tag></body>";
+	size_t openTagOpenIndex = 0;
+
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(&body, openTagName, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, 11);
+
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(&body, openTagName, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, 45);
+
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(&body, openTagName, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, 75);
+
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(&body, openTagName, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, std::string::npos);
+
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagOpenIndex(&body, openTagName, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, std::string::npos);
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// size_t GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(const std::string* body, const size_t openTagOpenIndex)
+
+TEST(STATIC_FastHTML, GetNextOpenTagCloseIndex_01) {
+#if DO_TEST_STATIC_FastHTML_GetNextOpenTagCloseIndex_01 == 0
+	GTEST_SKIP();
+#endif
+	// missing close tag
+	std::string openTagName = "<tag";
+	std::string body = "<body><div><tag><p>test text</p></tag></div> <tag class=\"superClass\"></tag><tag > </tag></body>";
+	size_t openTagOpenIndex = body.find(openTagName);
+
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, 11+4);
+
+	openTagOpenIndex = body.find(openTagName, openTagOpenIndex);
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, 45+23);
+
+	openTagOpenIndex = body.find(openTagName, openTagOpenIndex);
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, 75+5);
+
+	openTagOpenIndex = body.find(openTagName, openTagOpenIndex);
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, std::string::npos);
+
+	openTagOpenIndex = body.find(openTagName, openTagOpenIndex);
+	openTagOpenIndex = GtestWrapper_FastHTML_GetNextOpenTagCloseIndex(&body, openTagOpenIndex);
+	EXPECT_EQ(openTagOpenIndex, std::string::npos);
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// std::string GtestWrapper_FastHTML_ExtractStatement(const std::string* body, const size_t openTagOpenIndex, const size_t openTagCloseIndex)
+
+TEST(STATIC_FastHTML, ExtractStatement_01) {
+#if DO_TEST_STATIC_FastHTML_ExtractStatement_01 == 0
+	GTEST_SKIP();
+#endif
+	// missing close tag
+	std::string ret;
+	std::string body = "<body><div><tag><p>test text</p></tag></div> <tag class=\"superClass\"></tag><tag> </tag></body>";
+	size_t openTagOpenIndex = 45;
+	size_t openTagCloseIndex = 68;
+
+	ret = GtestWrapper_FastHTML_ExtractStatement(&body, openTagOpenIndex, openTagCloseIndex);
+	EXPECT_EQ(ret, "<tag class=\"superClass\">");
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// bool GtestWrapper_FastHTML_CheckReqAttrExists(const std::string statement, const std::map<std::string, std::string> dict)
+
+TEST(STATIC_FastHTML, CheckReqAttrExists_01) {
+#if DO_TEST_STATIC_FastHTML_CheckReqAttrExists_01 == 0
+	GTEST_SKIP();
+#endif
+	bool ret;
+	std::string statement = "<tagclass=\"Cat\"id=0style=\"HelloKitty\">";
+	std::map<std::string, std::string> dict;
+	dict["class"] = "Dog";
+	dict["id"] = "9";
+	dict["style"] = "Dark";
+
+	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
+	EXPECT_EQ(ret, true);
+}
+
+TEST(STATIC_FastHTML, CheckReqAttrExists_02) {
+#if DO_TEST_STATIC_FastHTML_CheckReqAttrExists_02 == 0
+	GTEST_SKIP();
+#endif
+	// redundant attr #1
+	bool ret;
+	std::string statement = "<tagclass=\"Cat\"id=0style=\"HelloKitty\">";
+	std::map<std::string, std::string> dict;
+	dict["class"] = "Dog";
+	dict["id"] = "9";
+	dict["style"] = "Dark";
+	dict["additional"] = "Req";
+
+	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
+	EXPECT_EQ(ret, false);
+}
+
+TEST(STATIC_FastHTML, CheckReqAttrExists_03) {
+#if DO_TEST_STATIC_FastHTML_CheckReqAttrExists_03 == 0
+	GTEST_SKIP();
+#endif
+	// redundant attr #2
+	bool ret;
+	std::string statement = "<tagclass=\"Cat\"id=0style=\"HelloKitty\"style=\"Light\">";
+	std::map<std::string, std::string> dict;
+	dict["class"] = "Dog";
+	dict["id"] = "9";
+	dict["style"] = "Dark";
+
+	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
+	EXPECT_EQ(ret, true);
+}
+
+TEST(STATIC_FastHTML, CheckReqAttrExists_04) {
+#if DO_TEST_STATIC_FastHTML_CheckReqAttrExists_04 == 0
+	GTEST_SKIP();
+#endif
+	// missing req attr
+	bool ret;
+	std::string statement = "<tagclass=\"Cat\"id=0>";
+	std::map<std::string, std::string> dict;
+	dict["class"] = "Dog";
+	dict["id"] = "9";
+	dict["style"] = "Dark";
+
+	ret = GtestWrapper_FastHTML_CheckReqAttrExists(statement, dict);
+	EXPECT_EQ(ret, false);
+}
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// bool GtestWrapper_FastHTML_CheckAttrsAreValid(const std::string statement, const std::string openTagName, const std::map<std::string, std::string> dict)
+
+TEST(STATIC_FastHTML, CheckAttrsAreValid_01) {
+#if DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_01 == 0
+	GTEST_SKIP();
+#endif
+	bool ret;
+	const std::string openTagName = "<tag";
+	std::string statement = "<tagclass=\"Dog\"id=9style=\"Dark\">";
+	std::map<std::string, std::string> dict;
+	dict["class"] = "Dog";
+	dict["id"] = "9";
+	dict["style"] = "Dark";
+
+	ret = GtestWrapper_FastHTML_CheckAttrsAreValid(statement, openTagName, dict);
+	EXPECT_EQ(ret, true);
+}
+
+TEST(STATIC_FastHTML, CheckAttrsAreValid_02) {
+#if DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_02 == 0
+	GTEST_SKIP();
+#endif
+	bool ret;
+	const std::string openTagName = "<tag";
+	std::string statement = "<tagclass=\"Cat\"id=0style=\"HelloKitty\">";
+	std::map<std::string, std::string> dict;
+	dict["class"] = "Dog";
+	dict["id"] = "9";
+	dict["style"] = "Dark";
+
+	ret = GtestWrapper_FastHTML_CheckAttrsAreValid(statement, openTagName, dict);
+	EXPECT_EQ(ret, false);
+}
+
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// std::string GtestWrapper_FastHTML_ExtractData(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName)
+
+TEST(STATIC_FastHTML, ExtractData_01) {
+#if DO_TEST_STATIC_FastHTML_ExtractData_01 == 0
+	GTEST_SKIP();
+#endif
+	// missing close tag
+	std::string ret;
+
+	std::string body = "<body><div><tag><p>Sir Darth Vader</p></tag></div> <tag class=\"superClass\"></tag><tag> </tag></body>";
+	size_t openTagCloseIndex = 15;
+	size_t closeTagOpenIndex = 38;
+	std::string openTagName = "<tag";
+	std::string closeTagName = "</tag";
+
+
+	ret = GtestWrapper_FastHTML_ExtractData(&body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName);
+	EXPECT_EQ(ret, "<p>Sir Darth Vader</p>");
+}
+
