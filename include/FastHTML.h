@@ -10,6 +10,7 @@
 #include <list>
 
 #include <vector>
+#include <mutex>
 
 std::string ClearOtherTags(const std::string dataWithTags);
 
@@ -18,9 +19,8 @@ class HResponse
 {
 public:
 	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter);
-	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg);
+	//HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg);
 	HResponse(const std::string* body, const std::string tag);
-	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter[], size_t n);
 	virtual ~HResponse();
 
 
@@ -30,11 +30,24 @@ public:
 
 private:
 	std::list<std::string> occurrence;
+	const std::pair<std::string, std::map<std::string, std::string>> filter;
+	const std::string* body;
+	const bool reqAnyAttr;
+	std::mutex mtxFillup;
+	std::mutex mtx1;
+	std::mutex mtx2;
+	std::condition_variable cvFillup;
+	std::condition_variable cv1;
+	std::condition_variable cv2;
+	unsigned int currentThreadID = 0;
+	unsigned int threadsToRun = 0;
+	void fillupOccurrences_consumer(const std::string tag, std::vector<size_t>* refOpenOccurr);
+	void fillupOccurrences_consumer_th(const std::string tag, std::vector<size_t>* refOpenOccurr, unsigned int threadID);
 };
 
 // TODO remove
 // execute time test
-void JfillVect_time(std::string partBody, std::string openTagName, std::vector<size_t>* refVect);
+void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::vector<size_t>* refOpenOccurr);
 
 #ifdef CUSTOM_GOOGLE_TEST_DEF
 std::string GtestWrapper_FastHTML_RemoveSpaces(std::string);

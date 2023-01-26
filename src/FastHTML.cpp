@@ -1,5 +1,5 @@
 ﻿// FastHTML.cpp : Defines the entry point for the application.
-// v0.9.99
+// v0.9.99B
 #if defined(_WIN32) || defined(_WIN64)
 #include <Windows.h>
 #include <sysinfoapi.h>
@@ -15,8 +15,10 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <tuple>
+
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 
 
@@ -35,17 +37,18 @@ static bool CheckReqAttrExists(const std::string statement, const std::map<std::
 static bool CheckAttrsAreValid(const std::string statement, const std::string openTagName, const std::map<std::string, std::string> dict);
 static std::string ExtractData(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName);
 
-
 // CTOR/DTOR
-void JfillVect_time(std::string partBody, std::string openTagName, std::vector<size_t>* refVect)
+void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::vector<size_t>* refOpenOccurr)
 {
+	const std::string tag = RemoveSpaces(filter.first);
+	const std::string openTagName = '<' + tag;
 	size_t found = 0;
 	size_t id = 1;
 	std::vector<size_t> tmpVector;
 	while (true) {
 		found = partBody.find(openTagName, found);
 		if (found != std::string::npos) {
-			refVect->push_back(found);
+			refOpenOccurr->push_back(found);
 			found++;
 		}
 		else { break; }
@@ -53,70 +56,135 @@ void JfillVect_time(std::string partBody, std::string openTagName, std::vector<s
 }
 
 
-void JfillVect(std::string partBody, size_t offset, std::string openTagName, std::vector<size_t> *refVect, std::mutex *mtx)
+void GetAllTagOpenIndexes_th(std::string partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::vector<size_t> *refOpenOccurr, std::mutex *mtx)
 {
-	size_t found = 0;
+	const std::string tag = RemoveSpaces(filter.first);
+	const std::string openTagName = '<' + tag;
+	size_t openTagOpenIndex = -1;
+	//size_t openTagCloseIndex;
 	size_t id = 1;
 	std::vector<size_t> tmpVector;
 	while (true) {
-		found = partBody.find(openTagName, found);
-		if (found != std::string::npos) {
-			tmpVector.push_back(found + offset);
-			found++;
+		openTagOpenIndex = partBody.find(openTagName, openTagOpenIndex + 1); // openTagOpenIndex + 1 = 0 first time
+		if (openTagOpenIndex != std::string::npos) {
+			//openTagCloseIndex = GetNextOpenTagCloseIndex(&partBody, openTagOpenIndex);
+			tmpVector.push_back(openTagOpenIndex + offset);
 		}
 		else { break; }
 	}
 
 	std::vector<size_t> copyVector;
 	mtx->lock();
-	std::merge(tmpVector.begin(), tmpVector.end(), refVect->begin(), refVect->end(), std::back_inserter(copyVector));
-	*refVect = copyVector;
+	std::merge(tmpVector.begin(), tmpVector.end(), refOpenOccurr->begin(), refOpenOccurr->end(), std::back_inserter(copyVector));
+	*refOpenOccurr = copyVector;
 	mtx->unlock();
 }
 
-HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter)
+
+void HResponse::fillupOccurrences_consumer(const std::string tag, std::vector<size_t>* refOpenOccurr)
 {
-	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
 	const std::string closeTagName = "</" + tag;
-	auto [openTagOpenIndex, openTagCloseIndex] = GetOpenTagIndexes(body, openTagName);
+	size_t openTagOpenIndex;
+	while (true) {
+		// pop index
+		if (!refOpenOccurr->empty()) {
+			openTagOpenIndex = refOpenOccurr->back();
+			refOpenOccurr->pop_back();
+		}
+		else {
+			break; // main exit
+		}
 
-	while (openTagOpenIndex != std::string::npos) {
+		// extract statement
+		size_t openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
+		if (openTagCloseIndex == std::string::npos) break; // missing close means corrupted body
 		std::string statement = body->substr(openTagOpenIndex, openTagCloseIndex - openTagOpenIndex + 1);  // <tag ... ... >
 		statement = RemoveSpaces(statement);  // <tag...>
 
-		bool reqAnyAttr = RequireAnyAttr(filter.second);
+		// valid attrs
 		bool hasAnyAttr = HasAnyAttr(statement, openTagName);
-
 		if (reqAnyAttr && hasAnyAttr) {
 			if (!CheckReqAttrExists(statement, filter.second) || !CheckAttrsAreValid(statement, openTagName, filter.second)) {
-				openTagOpenIndex = GetNextOpenTagOpenIndex(body, openTagName, openTagOpenIndex);
-				openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
-				continue;
+				continue; // invalid tag
 			}
 		}
 
+		// extract data
 		if (reqAnyAttr == hasAnyAttr) {
 			size_t closeTagOpenIndex = body->find(closeTagName, openTagCloseIndex + 1);
 			if (closeTagOpenIndex == std::string::npos) throw std::length_error("Missing close tag in html statement");
 
 			if (openTagCloseIndex + 1 == closeTagOpenIndex) { //there is no data
-				openTagOpenIndex = GetNextOpenTagOpenIndex(body, openTagName, openTagOpenIndex);
-				openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
 				occurrence.push_back("");
-				continue;
 			}
-
-			occurrence.push_back(ExtractData(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName));
+			else {
+				std::string extractedDataBeforeMutex = ExtractData(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName);
+				occurrence.push_back(extractedDataBeforeMutex);
+			}
 		}
-
-		openTagOpenIndex = body->find(openTagName, openTagOpenIndex + openTagName.size());
-		openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
-	} // WHILE
+	}
 }
 
-HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg)
+void HResponse::fillupOccurrences_consumer_th(const std::string tag, std::vector<size_t>* refOpenOccurr, const unsigned int threadID)
 {
+	const std::string openTagName = '<' + tag;
+	const std::string closeTagName = "</" + tag;
+	size_t openTagOpenIndex;
+	
+	while (true) {
+		// pop index
+		mtxFillup.lock();
+		if (!refOpenOccurr->empty()) {
+			openTagOpenIndex = refOpenOccurr->back();
+			refOpenOccurr->pop_back();
+			mtxFillup.unlock();
+		}
+		else {
+			mtxFillup.unlock();
+			break; // main exit
+		}
+
+		// extract statement
+		size_t openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
+		if (openTagCloseIndex == std::string::npos) {
+			break; // missing close means corrupted body
+		}
+		std::string statement = body->substr(openTagOpenIndex, openTagCloseIndex - openTagOpenIndex + 1);  // <tag ... ... >
+		statement = RemoveSpaces(statement);  // <tag...>
+
+		// valid attrs
+		bool hasAnyAttr = HasAnyAttr(statement, openTagName);
+		if (reqAnyAttr && hasAnyAttr) {
+			if (!CheckReqAttrExists(statement, filter.second) || !CheckAttrsAreValid(statement, openTagName, filter.second)) {
+				continue; // invalid tag
+			}
+		}
+
+		// extract data
+		if (reqAnyAttr == hasAnyAttr) {
+			size_t closeTagOpenIndex = body->find(closeTagName, openTagCloseIndex + 1);
+			if (closeTagOpenIndex == std::string::npos) throw std::length_error("Missing close tag in html statement");
+
+			if (openTagCloseIndex + 1 == closeTagOpenIndex) { //there is no data
+				mtxFillup.lock();
+				occurrence.push_back("");
+				mtxFillup.unlock();
+			}
+			else {
+				std::string extractedDataBeforeMutex = ExtractData(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName);
+				mtxFillup.lock();
+				occurrence.push_back(extractedDataBeforeMutex);
+				mtxFillup.unlock();
+			}
+		}
+
+	}
+}
+
+HResponse::HResponse(const std::string* _body, const std::pair<std::string, std::map<std::string, std::string>> _filter) : body(_body), filter(_filter), reqAnyAttr(RequireAnyAttr(_filter.second))
+{
+	// filter attr's values must be whitespaceless
 	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
 	const std::string closeTagName = "</" + tag;
@@ -132,43 +200,49 @@ HResponse::HResponse(const std::string* body, const std::pair<std::string, std::
 	numCPU = std::thread::hardware_concurrency();
 #endif
 
-	//if (bodySize < minResonableSize) numCPU = 1;
-	//else 
 	std::vector<size_t> tagOpenOpenIndexOccurrences;
-	numCPU = numCPU >= 2 ? numCPU : 2;
+	
 	if (bodySize < minResonableSize) {
-		JfillVect_time(*body, openTagName, &tagOpenOpenIndexOccurrences);
+		GetAllTagOpenIndexes(*body, filter, &tagOpenOpenIndexOccurrences);
+		fillupOccurrences_consumer(tag, &tagOpenOpenIndexOccurrences);
 	}
 	else {
-
+		numCPU = numCPU >= 2 ? numCPU : 2;
 		size_t count = bodySize / numCPU;
 		size_t startIndex = 0;
+		threadsToRun = numCPU;
 
 		std::vector<std::thread> threadsVector;
-
 		std::mutex mtx;
 
+		
 		while (--numCPU)
 		{
-			threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex, count), startIndex, openTagName, &tagOpenOpenIndexOccurrences, &mtx });
+			threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, body->substr(startIndex, count), startIndex, filter, &tagOpenOpenIndexOccurrences, &mtx });
 			startIndex += count - (openTagName.size() - 1);
 		}
-		threadsVector.push_back(std::thread{ JfillVect, body->substr(startIndex), startIndex, openTagName, &tagOpenOpenIndexOccurrences, &mtx });
+		threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, body->substr(startIndex), startIndex, filter, &tagOpenOpenIndexOccurrences, &mtx });
 
 		for (auto& thd : threadsVector) {
 			thd.join();
 		}
+		threadsVector.clear();
 
-		//std::cout << "here \n";
-		//for (auto e : tagOpenOpenIndexOccurrences)
-		//{
-		//	std::cout <<" go: " << e << std::endl;
-		//}
+		currentThreadID = 0;
+		numCPU = threadsToRun;
+		int index = 0;
+		while (numCPU--)
+		{
+			threadsVector.push_back(std::thread{ &HResponse::fillupOccurrences_consumer_th, this, tag, &tagOpenOpenIndexOccurrences, index++ });
+		}
+
+		for (auto& thd : threadsVector) {
+			thd.join();
+		}
 	}
-	// TODO what next? I have all occurnces of searching tag in "tagOpenOpenIndexOccurrences"
 }
 
-HResponse::HResponse(const std::string* body, const std::string tag)
+HResponse::HResponse(const std::string* _body, const std::string tag) : body(_body), filter({ tag, {} }), reqAnyAttr(false)
 {
 	const std::string openTagName = '<' + tag;
 	const std::string closeTagName = "</" + tag;
@@ -197,11 +271,8 @@ HResponse::HResponse(const std::string* body, const std::string tag)
 		openTagOpenIndex = body->find(openTagName, openTagOpenIndex + openTagName.size());
 		openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 	} // WHILE
-}
 
-HResponse::HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filterArr[], size_t n)
-{
-	std::cout << sizeof(filterArr) << " : " << n << std::endl;
+	//Reverse ? occurrence ?
 }
 
 
@@ -415,16 +486,19 @@ static bool CheckAttrsAreValid(const std::string statement, const std::string op
 	return attrsAreValid;
 }
 
+
 static std::string ExtractData(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName)
 {
-	size_t nextRedundantOpenTagIndex = body->substr(openTagCloseIndex + 1, closeTagOpenIndex - (openTagCloseIndex + 1)).find(openTagName);
+	std::string debugstring = body->substr(openTagCloseIndex + 1, closeTagOpenIndex - (openTagCloseIndex + 1));
+	size_t nextRedundantOpenTagIndex = debugstring.find(openTagName);
+
 	if (nextRedundantOpenTagIndex != std::string::npos)
 	{
 		size_t redundantOpens = 1;
 		while (redundantOpens)
 		{
 			while (true) {
-				nextRedundantOpenTagIndex = body->substr(openTagCloseIndex + 1 + nextRedundantOpenTagIndex + openTagName.size(), closeTagOpenIndex - (nextRedundantOpenTagIndex + openTagName.size() + openTagCloseIndex + 1)).find(openTagName);
+				nextRedundantOpenTagIndex = debugstring.find(openTagName, nextRedundantOpenTagIndex + (openTagName.size() - 1));
 				if (nextRedundantOpenTagIndex != std::string::npos)
 				{
 					redundantOpens++;
@@ -435,8 +509,9 @@ static std::string ExtractData(const std::string* body, const size_t openTagClos
 				}
 			}
 
-			nextRedundantOpenTagIndex = closeTagOpenIndex + closeTagName.size();
-			closeTagOpenIndex = body->find(closeTagName, closeTagOpenIndex + closeTagName.size());
+			nextRedundantOpenTagIndex = closeTagOpenIndex;
+			closeTagOpenIndex = body->find(closeTagName, closeTagOpenIndex+1);
+			debugstring = body->substr(nextRedundantOpenTagIndex, closeTagOpenIndex - nextRedundantOpenTagIndex);
 			redundantOpens--;
 		}
 	}

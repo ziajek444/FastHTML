@@ -20,9 +20,11 @@ int main()
 	using std::chrono::milliseconds;
 
 	std::pair<std::string, std::map<std::string, std::string>> filter;
-	filter.first = "<span";
+	filter.first = "div";
+	// whitespaceless
+	filter.second["class"] = "flexjustify-betweenborder-bpy-2desktop:py-0.5"; //class="flex justify-between border-b py-2 desktop:py-0.5"
 
-	ifstream f("..\\..\\..\\testsdata\\investing.html");  // 1 MB
+	ifstream f("..\\..\\..\\testsdata\\investing.tesla.html");  // 1 MB
 	std::string str;
 	if (f) {
 		std::cout << "read file \n";
@@ -42,7 +44,9 @@ int main()
 	duration<double, std::milli> ms_double = t2 - t1;
 
 	
-
+	// TODO
+	// BodyBuilder -> extract only content between <body>...</body>
+	// Also erase all comments: <!-- comment -->
 
 
 	// !! 
@@ -54,9 +58,7 @@ int main()
 
 	// HResponse hr2(&str, filter, true) #1
 	t1 = high_resolution_clock::now();
-	for (int i = 0; i < 100; i++) {
-		HResponse hr2(&str, filter, true);
-	}
+	HResponse hr2(&str, filter);
 	t2 = high_resolution_clock::now();
 
 	ms_double = t2 - t1;
@@ -65,20 +67,13 @@ int main()
 
 
 
-	// JfillVect_time #1
-	t1 = high_resolution_clock::now();
-	std::vector<size_t> tagOpenClosePairs;
-	for (int i = 0; i < 100; i++) {
-		tagOpenClosePairs.clear();
-		JfillVect_time(str, "<span", &tagOpenClosePairs);
+	// !! 
+	std::cout << "\n\n";
+	std::cout << hr2.GetListedData().size() << std::endl;
+	for (auto e : hr2.GetListedData()) {
+		std::cout << e << std::endl;
 	}
-	t2 = high_resolution_clock::now();
-
-	ms_double = t2 - t1;
-	std::cout << "JfillVect_time #1: " << ms_double.count() << "ms\n";
-	std::cout << str.substr(250187, 16);
-	//  -  -  -  -  -
-
+	// !!
 
 
 	return 0;
