@@ -24,8 +24,8 @@ int main()
 	// whitespaceless
 	filter.second["class"] = "flexjustify-betweenborder-bpy-2desktop:py-0.5"; //class="flex justify-between border-b py-2 desktop:py-0.5"
 
-	//ifstream f("..\\..\\..\\testsdata\\investing.tesla.html");  // 1.4348 MB
-	ifstream f("..\\..\\..\\testsdata\\investing.tesla.huge.html");  // 26.9141 MB
+	//ifstream f("..\\..\\..\\testsdata\\investing.tesla.resp");  // 1.4348 MB
+	ifstream f("..\\..\\..\\testsdata\\investing.tesla.huge.resp");  // 26.9141 MB
 	std::string str;
 	if (f) {
 		std::cout << "read file \n";
