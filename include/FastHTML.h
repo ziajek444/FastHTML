@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <mutex>
+#include <deque>
 
 std::string ClearOtherTags(const std::string dataWithTags);
 
@@ -41,8 +42,8 @@ private:
 	std::condition_variable cv2;
 	unsigned int currentThreadID = 0;
 	unsigned int threadsToRun = 0;
-	void fillupOccurrences_consumer(const std::string tag, std::vector<size_t>* refOpenOccurr);
-	void fillupOccurrences_consumer_th(const std::string tag, std::vector<size_t>* refOpenOccurr, unsigned int threadID);
+	void fillupOccurrences_consumer(const std::string tag, const std::list<size_t>* refOpenOccurr);
+	void fillupOccurrences_consumer_th(const std::string tag, std::deque<size_t>* refOpenOccurr, const size_t startIndex, const size_t stopIndex);
 };
 
 // TODO remove

@@ -19,6 +19,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <deque>
 
 
 
@@ -38,7 +39,7 @@ static bool CheckAttrsAreValid(const std::string statement, const std::string op
 static std::string ExtractData(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName);
 
 // CTOR/DTOR
-void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::vector<size_t>* refOpenOccurr)
+void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::list<size_t>* refOpenOccurr)
 {
 	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
@@ -56,46 +57,31 @@ void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std
 }
 
 
-void GetAllTagOpenIndexes_th(std::string partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::vector<size_t> *refOpenOccurr, std::mutex *mtx)
+void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::deque<size_t> *refOpenOccurr, std::mutex *mtx)
 {
 	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
 	size_t openTagOpenIndex = -1;
-	//size_t openTagCloseIndex;
 	size_t id = 1;
-	std::vector<size_t> tmpVector;
 	while (true) {
 		openTagOpenIndex = partBody.find(openTagName, openTagOpenIndex + 1); // openTagOpenIndex + 1 = 0 first time
 		if (openTagOpenIndex != std::string::npos) {
-			//openTagCloseIndex = GetNextOpenTagCloseIndex(&partBody, openTagOpenIndex);
-			tmpVector.push_back(openTagOpenIndex + offset);
+			mtx->lock();
+				refOpenOccurr->push_back(openTagOpenIndex + offset);
+			mtx->unlock();
 		}
 		else { break; }
 	}
-
-	std::vector<size_t> copyVector;
-	mtx->lock();
-	std::merge(tmpVector.begin(), tmpVector.end(), refOpenOccurr->begin(), refOpenOccurr->end(), std::back_inserter(copyVector));
-	*refOpenOccurr = copyVector;
-	mtx->unlock();
 }
 
 
-void HResponse::fillupOccurrences_consumer(const std::string tag, std::vector<size_t>* refOpenOccurr)
+void HResponse::fillupOccurrences_consumer(const std::string tag, const std::list<size_t>* refOpenOccurr)
 {
 	const std::string openTagName = '<' + tag;
 	const std::string closeTagName = "</" + tag;
-	size_t openTagOpenIndex;
-	while (true) {
-		// pop index
-		if (!refOpenOccurr->empty()) {
-			openTagOpenIndex = refOpenOccurr->back();
-			refOpenOccurr->pop_back();
-		}
-		else {
-			break; // main exit
-		}
-
+	//size_t openTagOpenIndex;
+	// pop index
+	for(size_t openTagOpenIndex : *refOpenOccurr) {
 		// extract statement
 		size_t openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
 		if (openTagCloseIndex == std::string::npos) break; // missing close means corrupted body
@@ -126,24 +112,26 @@ void HResponse::fillupOccurrences_consumer(const std::string tag, std::vector<si
 	}
 }
 
-void HResponse::fillupOccurrences_consumer_th(const std::string tag, std::vector<size_t>* refOpenOccurr, const unsigned int threadID)
+void HResponse::fillupOccurrences_consumer_th(const std::string tag, std::deque<size_t>* refOpenOccurr, const size_t startIndex, const size_t stopIndex)
 {
 	const std::string openTagName = '<' + tag;
 	const std::string closeTagName = "</" + tag;
 	size_t openTagOpenIndex;
 	
-	while (true) {
+	
+
+	for(size_t idx  = startIndex; idx < stopIndex; idx++) {
 		// pop index
-		mtxFillup.lock();
-		if (!refOpenOccurr->empty()) {
-			openTagOpenIndex = refOpenOccurr->back();
-			refOpenOccurr->pop_back();
-			mtxFillup.unlock();
-		}
-		else {
-			mtxFillup.unlock();
-			break; // main exit
-		}
+		//mtxFillup.lock();
+		//if (!refOpenOccurr->empty()) {
+			openTagOpenIndex = (*refOpenOccurr)[idx];
+			//refOpenOccurr->pop_back();
+		//mtxFillup.unlock();
+		//}
+		//else {
+		//	mtxFillup.unlock();
+		//	break; // main exit
+		//}
 
 		// extract statement
 		size_t openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
@@ -178,7 +166,6 @@ void HResponse::fillupOccurrences_consumer_th(const std::string tag, std::vector
 				mtxFillup.unlock();
 			}
 		}
-
 	}
 }
 
@@ -199,29 +186,43 @@ HResponse::HResponse(const std::string* _body, const std::pair<std::string, std:
 #else*/
 	numCPU = std::thread::hardware_concurrency();
 #endif
-
-	std::vector<size_t> tagOpenOpenIndexOccurrences;
 	
 	if (bodySize < minResonableSize) {
-		GetAllTagOpenIndexes(*body, filter, &tagOpenOpenIndexOccurrences);
-		fillupOccurrences_consumer(tag, &tagOpenOpenIndexOccurrences);
+		std::list<size_t> tagOpenOpenIndexOccurrences_list;
+		GetAllTagOpenIndexes(*body, filter, &tagOpenOpenIndexOccurrences_list);
+		fillupOccurrences_consumer(tag, &tagOpenOpenIndexOccurrences_list);
 	}
-	else {
+	else { 
+		std::deque<size_t> tagOpenOpenIndexOccurrences_deque;
+
 		numCPU = numCPU >= 2 ? numCPU : 2;
 		size_t count = bodySize / numCPU;
 		size_t startIndex = 0;
 		threadsToRun = numCPU;
 
-		std::vector<std::thread> threadsVector;
-		std::mutex mtx;
-
-		
-		while (--numCPU)
-		{
-			threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, body->substr(startIndex, count), startIndex, filter, &tagOpenOpenIndexOccurrences, &mtx });
+		// ----------------------
+		// - - - - - -  - - - - -  string_view is 25% faster
+		std::vector<std::string_view> str_arr;
+		for (int i = 0; i < numCPU - 1; i++) {
+			str_arr.push_back(std::string_view(*body).substr(startIndex, count));
 			startIndex += count - (openTagName.size() - 1);
 		}
-		threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, body->substr(startIndex), startIndex, filter, &tagOpenOpenIndexOccurrences, &mtx });
+		str_arr.push_back(std::string_view(*body).substr(startIndex));
+		// - - - - - -  - - - - - 
+		// ----------------------
+
+		std::vector<std::thread> threadsVector;
+		std::mutex mtx;
+		
+		int myi = 0;
+		while (--numCPU)
+		{
+			threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, str_arr[myi], startIndex, filter, &tagOpenOpenIndexOccurrences_deque, &mtx});
+			myi++;
+
+			startIndex += count - (openTagName.size() - 1);
+		}
+		threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, str_arr[myi], startIndex, filter, &tagOpenOpenIndexOccurrences_deque, &mtx });
 
 		for (auto& thd : threadsVector) {
 			thd.join();
@@ -231,10 +232,19 @@ HResponse::HResponse(const std::string* _body, const std::pair<std::string, std:
 		currentThreadID = 0;
 		numCPU = threadsToRun;
 		int index = 0;
-		while (numCPU--)
+		size_t deque_size = tagOpenOpenIndexOccurrences_deque.size();
+		size_t partSize = deque_size / numCPU;
+		size_t stopIndex;
+		while (--numCPU)
 		{
-			threadsVector.push_back(std::thread{ &HResponse::fillupOccurrences_consumer_th, this, tag, &tagOpenOpenIndexOccurrences, index++ });
+			startIndex = index * partSize;
+			stopIndex = startIndex + partSize;
+			threadsVector.push_back(std::thread{ &HResponse::fillupOccurrences_consumer_th, this, tag, &tagOpenOpenIndexOccurrences_deque, startIndex, stopIndex });
+			index++;
 		}
+		startIndex = index * partSize;
+		stopIndex = startIndex + (deque_size - (index * partSize));
+		threadsVector.push_back(std::thread{ &HResponse::fillupOccurrences_consumer_th, this, tag, &tagOpenOpenIndexOccurrences_deque, startIndex, stopIndex });
 
 		for (auto& thd : threadsVector) {
 			thd.join();
