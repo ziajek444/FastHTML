@@ -21,7 +21,16 @@
 #include <condition_variable>
 #include <deque>
 
-
+// TODO : FastHTML from MarketAnal
+// multi filter is required
+// GetListedData(); // return_not_empty() method would be useful
+// execute not from ctor would be more handy
+// "Only first found" option would speed up work in certain cases
+// queue is important so thread needs to work on separate containers
+// space sensetive would be helpful <tag ... attr1 = "n a me" attr2 = "nam e" ...>
+// "n a me" != "nam e"
+// GetAllTagOpenIndexes() should filter out wrong tags (not append if not match)
+// !! remove comments
 
 // STATIC PROTOTYPES
 
@@ -335,7 +344,9 @@ std::string ClearOtherTags(std::string _statement)
 		if (openTagOpenCharacterIndex == std::string::npos) break;  // there is no any open prefixes
 
 		openTagCloseCharacterIndex = statement.find('>', openTagOpenCharacterIndex);  // <tag|>
-		// TODO Handle ret value
+		if (openTagCloseCharacterIndex == std::string::npos) {
+			break;
+		}
 		spaceAfterOpenTag = FindWhitespace(statement, openTagOpenCharacterIndex);  // <tag| ...  > or NPOS
 		if (spaceAfterOpenTag == std::string::npos || spaceAfterOpenTag > openTagCloseCharacterIndex)
 		{  // <tag>
@@ -351,9 +362,13 @@ std::string ClearOtherTags(std::string _statement)
 
 		size_t closestOpenTagName = openTagOpenCharacterIndex;
 		size_t latestCloseTagName = statement.find(closeTagName);
-		// TODO check return code
+		if (latestCloseTagName == std::string::npos) {
+			break;
+		}
 		latestCloseTagName = statement.find('>', latestCloseTagName + closeTagName.size());
-		// TODO check return code
+		if (latestCloseTagName == std::string::npos) {
+			break;
+		}
 		
 		auto it = statement.begin();
 		statement.erase(it + closestOpenTagName, it + latestCloseTagName + 1);
@@ -475,7 +490,7 @@ static bool CheckAttrsAreValid(const std::string statement, const std::string op
 
 	std::string attrStatement = statement.substr(openTagName.size(), statement.size() - openTagName.size() - 1);  // <tag|attr1="asd"attr2="qwe"attr3="123"|>
 	if (attrStatement.back() == '/')
-	{ // TODO remove this if statement and handle '/' character
+	{
 		attrStatement.erase(attrStatement.end() - 1, attrStatement.end());
 	}
 
