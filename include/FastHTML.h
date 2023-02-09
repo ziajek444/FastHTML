@@ -8,14 +8,13 @@
 #include <utility>
 #include <map>
 #include <list>
-
 #include <vector>
-#include <mutex>
 #include <deque>
 
 std::string ClearOtherTags(const std::string dataWithTags);
+std::string ClearTagsOnly(std::string _statement);
 
-// TODO: Reference additional headers your program requires here.
+
 class HResponse
 {
 public:
@@ -34,21 +33,11 @@ private:
 	const std::pair<std::string, std::map<std::string, std::string>> filter;
 	const std::string* body;
 	const bool reqAnyAttr;
-	std::mutex mtxFillup;
-	std::mutex mtx1;
-	std::mutex mtx2;
-	std::condition_variable cvFillup;
-	std::condition_variable cv1;
-	std::condition_variable cv2;
 	unsigned int currentThreadID = 0;
 	unsigned int threadsToRun = 0;
 	void fillupOccurrences_consumer(const std::string tag, const std::list<size_t>* refOpenOccurr);
-	void fillupOccurrences_consumer_th(const std::string tag, std::deque<size_t>* refOpenOccurr, const size_t startIndex, const size_t stopIndex);
+	void fillupOccurrences_consumer_th(const std::string tag, std::deque<size_t>* refOpenOccurr, std::list<std::string>* occurenceN);
 };
-
-// TODO remove
-// execute time test
-void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::vector<size_t>* refOpenOccurr);
 
 #ifdef CUSTOM_GOOGLE_TEST_DEF
 std::string GtestWrapper_FastHTML_RemoveSpaces(std::string);

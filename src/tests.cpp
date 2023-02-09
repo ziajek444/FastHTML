@@ -34,6 +34,7 @@
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 RUN  // related to DO_TEST_ComplexTag_ComplexTag_4
+#define DO_TEST_FastHTML_ClearTagsOnly_ClearTagsOnly_01 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_01 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_02 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_03 RUN
@@ -58,6 +59,7 @@
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 RUN
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_07 RUN
 #define DO_TEST_STATIC_FastHTML_HasAnyAttr_01 RUN
 #define DO_TEST_STATIC_FastHTML_HasAnyAttr_02 RUN
 #define DO_TEST_STATIC_FastHTML_HasAnyAttr_03 RUN
@@ -406,6 +408,19 @@ TEST(FastHTML_ClearOtherTags, ClearOtherTags_18) {
 
 
 
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// ClearOnlyTags
+
+TEST(FastHTML_ClearTagsOnly, ClearTagsOnly_01) {
+#if DO_TEST_FastHTML_ClearTagsOnly_ClearTagsOnly_01 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "Han <p>pilot < / p>Solo<tr>the Third";
+	std::string ret = ClearTagsOnly(resp);
+	EXPECT_EQ(ret, "Han pilot Solothe Third");
+}
+
+
 
 // -  -  -  -  -  -  -  -  -  -  -  - 
 // GtestWrapper_FastHTML_FindWhitespace
@@ -632,6 +647,16 @@ TEST(STATIC_FastHTML, RemoveSpaces_06) {
 	std::string resp = " ";
 	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
 	EXPECT_EQ(ret, "");
+}
+
+TEST(STATIC_FastHTML, RemoveSpaces_07) {
+#if DO_TEST_STATIC_FastHTML_RemoveSpaces_07 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "space_ \n_enter_\n\r_unix-enter-"
+		"-real-enter";
+	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
+	EXPECT_EQ(ret, "space__enter__unix-enter--real-enter");
 }
 
 

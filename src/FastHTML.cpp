@@ -23,14 +23,14 @@
 
 // TODO : FastHTML from MarketAnal
 // multi filter is required
-// GetListedData(); // return_not_empty() method would be useful
+// GetListedData(); // return_not_empty() method would be useful						NEXT...
 // execute not from ctor would be more handy
 // "Only first found" option would speed up work in certain cases
-// queue is important so thread needs to work on separate containers
+// queue is important so thread needs to work on separate containers					DONE!
 // space sensetive would be helpful <tag ... attr1 = "n a me" attr2 = "nam e" ...>
 // "n a me" != "nam e"
 // GetAllTagOpenIndexes() should filter out wrong tags (not append if not match)
-// !! remove comments
+// !! remove comments <!-- ... -->														DONE! & enchanted by std::isspace
 
 // STATIC PROTOTYPES
 
@@ -52,21 +52,20 @@ void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std
 {
 	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
-	size_t found = 0;
+	size_t openTagOpenIndex = -1;
 	size_t id = 1;
 	std::vector<size_t> tmpVector;
 	while (true) {
-		found = partBody.find(openTagName, found);
-		if (found != std::string::npos) {
-			refOpenOccurr->push_back(found);
-			found++;
+		openTagOpenIndex = partBody.find(openTagName, openTagOpenIndex + 1);
+		if (openTagOpenIndex != std::string::npos) {
+			refOpenOccurr->push_back(openTagOpenIndex);
 		}
 		else { break; }
 	}
 }
 
 
-void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::deque<size_t> *refOpenOccurr, std::mutex *mtx)
+void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::deque<size_t> *refOpenOccurr)
 {
 	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
@@ -75,9 +74,7 @@ void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std
 	while (true) {
 		openTagOpenIndex = partBody.find(openTagName, openTagOpenIndex + 1); // openTagOpenIndex + 1 = 0 first time
 		if (openTagOpenIndex != std::string::npos) {
-			mtx->lock();
-				refOpenOccurr->push_back(openTagOpenIndex + offset);
-			mtx->unlock();
+			refOpenOccurr->push_back(openTagOpenIndex + offset);
 		}
 		else { break; }
 	}
@@ -121,27 +118,12 @@ void HResponse::fillupOccurrences_consumer(const std::string tag, const std::lis
 	}
 }
 
-void HResponse::fillupOccurrences_consumer_th(const std::string tag, std::deque<size_t>* refOpenOccurr, const size_t startIndex, const size_t stopIndex)
+void HResponse::fillupOccurrences_consumer_th(const std::string tag, std::deque<size_t>* refOpenOccurr, std::list<std::string>* occurenceN)
 {
 	const std::string openTagName = '<' + tag;
 	const std::string closeTagName = "</" + tag;
-	size_t openTagOpenIndex;
-	
-	
 
-	for(size_t idx  = startIndex; idx < stopIndex; idx++) {
-		// pop index
-		//mtxFillup.lock();
-		//if (!refOpenOccurr->empty()) {
-			openTagOpenIndex = (*refOpenOccurr)[idx];
-			//refOpenOccurr->pop_back();
-		//mtxFillup.unlock();
-		//}
-		//else {
-		//	mtxFillup.unlock();
-		//	break; // main exit
-		//}
-
+	for(size_t openTagOpenIndex : *refOpenOccurr) {
 		// extract statement
 		size_t openTagCloseIndex = GetNextOpenTagCloseIndex(body, openTagOpenIndex);
 		if (openTagCloseIndex == std::string::npos) {
@@ -164,15 +146,17 @@ void HResponse::fillupOccurrences_consumer_th(const std::string tag, std::deque<
 			if (closeTagOpenIndex == std::string::npos) throw std::length_error("Missing close tag in html statement");
 
 			if (openTagCloseIndex + 1 == closeTagOpenIndex) { //there is no data
-				mtxFillup.lock();
+				/*mtxFillup.lock();
 				occurrence.push_back("");
-				mtxFillup.unlock();
+				mtxFillup.unlock();*/
+				occurenceN->push_back("");
 			}
 			else {
 				std::string extractedDataBeforeMutex = ExtractData(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName);
-				mtxFillup.lock();
+				/*mtxFillup.lock();
 				occurrence.push_back(extractedDataBeforeMutex);
-				mtxFillup.unlock();
+				mtxFillup.unlock();*/
+				occurenceN->push_back(extractedDataBeforeMutex);
 			}
 		}
 	}
@@ -202,12 +186,12 @@ HResponse::HResponse(const std::string* _body, const std::pair<std::string, std:
 		fillupOccurrences_consumer(tag, &tagOpenOpenIndexOccurrences_list);
 	}
 	else { 
-		std::deque<size_t> tagOpenOpenIndexOccurrences_deque;
-
 		numCPU = numCPU >= 2 ? numCPU : 2;
 		size_t count = bodySize / numCPU;
 		size_t startIndex = 0;
 		threadsToRun = numCPU;
+
+		std::vector<std::deque<size_t>> tagOpenOpenIndexOccurrences_deques(numCPU);
 
 		// ----------------------
 		// - - - - - -  - - - - -  string_view is 25% faster
@@ -221,17 +205,16 @@ HResponse::HResponse(const std::string* _body, const std::pair<std::string, std:
 		// ----------------------
 
 		std::vector<std::thread> threadsVector;
-		std::mutex mtx;
 		
 		int myi = 0;
 		while (--numCPU)
 		{
-			threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, str_arr[myi], startIndex, filter, &tagOpenOpenIndexOccurrences_deque, &mtx});
+			threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, str_arr[myi], startIndex, filter, &(tagOpenOpenIndexOccurrences_deques[myi]) });
 			myi++;
 
 			startIndex += count - (openTagName.size() - 1);
 		}
-		threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, str_arr[myi], startIndex, filter, &tagOpenOpenIndexOccurrences_deque, &mtx });
+		threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, str_arr[myi], startIndex, filter, &(tagOpenOpenIndexOccurrences_deques[myi]) });
 
 		for (auto& thd : threadsVector) {
 			thd.join();
@@ -240,23 +223,21 @@ HResponse::HResponse(const std::string* _body, const std::pair<std::string, std:
 
 		currentThreadID = 0;
 		numCPU = threadsToRun;
-		int index = 0;
-		size_t deque_size = tagOpenOpenIndexOccurrences_deque.size();
-		size_t partSize = deque_size / numCPU;
-		size_t stopIndex;
+		std::vector<std::list<std::string>> occurrenceN_vec(numCPU);
+		myi = 0;
 		while (--numCPU)
 		{
-			startIndex = index * partSize;
-			stopIndex = startIndex + partSize;
-			threadsVector.push_back(std::thread{ &HResponse::fillupOccurrences_consumer_th, this, tag, &tagOpenOpenIndexOccurrences_deque, startIndex, stopIndex });
-			index++;
+			threadsVector.push_back(std::thread{ &HResponse::fillupOccurrences_consumer_th, this, tag, &(tagOpenOpenIndexOccurrences_deques[myi]), &(occurrenceN_vec[myi]) });
+			myi++;
 		}
-		startIndex = index * partSize;
-		stopIndex = startIndex + (deque_size - (index * partSize));
-		threadsVector.push_back(std::thread{ &HResponse::fillupOccurrences_consumer_th, this, tag, &tagOpenOpenIndexOccurrences_deque, startIndex, stopIndex });
+		threadsVector.push_back(std::thread{ &HResponse::fillupOccurrences_consumer_th, this, tag, &(tagOpenOpenIndexOccurrences_deques[myi]), &(occurrenceN_vec[myi]) });
 
 		for (auto& thd : threadsVector) {
 			thd.join();
+		}
+
+		for (std::list<std::string> l : occurrenceN_vec) {
+			occurrence.splice(occurrence.end(), l);
 		}
 	}
 }
@@ -336,24 +317,25 @@ std::string ClearOtherTags(std::string _statement)
 	const std::string closePrefixStr = "</";
 	const std::string openPrefixStr = "<";
 	
-	std::string statement = StickPrefixWithTag(_statement);
+	// Visual studio 2022 supress for mem preview
+	std::string statement2 = StickPrefixWithTag(_statement);
 
 	while (true)
 	{
-		openTagOpenCharacterIndex = statement.find('<');  // |<tag ...  >
+		openTagOpenCharacterIndex = statement2.find('<');  // |<tag ...  >
 		if (openTagOpenCharacterIndex == std::string::npos) break;  // there is no any open prefixes
 
-		openTagCloseCharacterIndex = statement.find('>', openTagOpenCharacterIndex);  // <tag|>
+		openTagCloseCharacterIndex = statement2.find('>', openTagOpenCharacterIndex);  // <tag|>
 		if (openTagCloseCharacterIndex == std::string::npos) {
-			break;
+			continue;
 		}
-		spaceAfterOpenTag = FindWhitespace(statement, openTagOpenCharacterIndex);  // <tag| ...  > or NPOS
+		spaceAfterOpenTag = FindWhitespace(statement2, openTagOpenCharacterIndex);  // <tag| ...  > or NPOS
 		if (spaceAfterOpenTag == std::string::npos || spaceAfterOpenTag > openTagCloseCharacterIndex)
 		{  // <tag>
-			tagName = statement.substr(openTagOpenCharacterIndex + 1, openTagCloseCharacterIndex - openTagOpenCharacterIndex - 1);
+			tagName = statement2.substr(openTagOpenCharacterIndex + 1, openTagCloseCharacterIndex - openTagOpenCharacterIndex - 1);
 		}
 		else {  // <tag ...>
-			tagName = statement.substr(openTagOpenCharacterIndex + 1, spaceAfterOpenTag - openTagOpenCharacterIndex);
+			tagName = statement2.substr(openTagOpenCharacterIndex + 1, spaceAfterOpenTag - openTagOpenCharacterIndex);
 		}
 
 		tagName = RemoveSpaces(tagName);
@@ -361,28 +343,84 @@ std::string ClearOtherTags(std::string _statement)
 		closeTagName = closePrefixStr + tagName;  // </tag
 
 		size_t closestOpenTagName = openTagOpenCharacterIndex;
-		size_t latestCloseTagName = statement.find(closeTagName);
-		if (latestCloseTagName == std::string::npos) {
-			break;
+		size_t latestCloseTagName = statement2.find(closeTagName);
+		if (latestCloseTagName == std::string::npos) { // there is no close tag
+			auto it = statement2.begin();
+			statement2.erase(it + openTagOpenCharacterIndex, it + openTagCloseCharacterIndex + 1);
+			continue;
 		}
-		latestCloseTagName = statement.find('>', latestCloseTagName + closeTagName.size());
-		if (latestCloseTagName == std::string::npos) {
-			break;
+		latestCloseTagName = statement2.find('>', latestCloseTagName + closeTagName.size());
+		if (latestCloseTagName == std::string::npos) { // there is no close statement
+			auto it = statement2.begin();
+			statement2.erase(it + openTagOpenCharacterIndex, statement2.end());
+			continue;
 		}
 		
-		auto it = statement.begin();
-		statement.erase(it + closestOpenTagName, it + latestCloseTagName + 1);
+		auto it = statement2.begin();
+		statement2.erase(it + closestOpenTagName, it + latestCloseTagName + 1);
 	}
 	
+	// Visual studio 2022 supress for mem preview
+	std::string statement(statement2);
 	return statement;
 }
 
+std::string ClearTagsOnly(std::string _statement)
+{
+	size_t openTagOpenCharacterIndex = 0;
+	size_t openTagCloseCharacterIndex = 0;
+
+	// Visual studio 2022 supress for mem preview
+	std::string statement2 = StickPrefixWithTag(_statement);
+
+	while (true)
+	{
+		openTagOpenCharacterIndex = statement2.find('<');  // |<tag ...  >
+		if (openTagOpenCharacterIndex == std::string::npos) break;  // there is no any open prefixes
+
+		openTagCloseCharacterIndex = statement2.find('>', openTagOpenCharacterIndex);  // <tag|>
+		if (openTagCloseCharacterIndex == std::string::npos) break;
+
+		auto it = statement2.begin();
+		statement2.erase(it + openTagOpenCharacterIndex, it + openTagCloseCharacterIndex + 1);
+	}
+
+	// Visual studio 2022 supress for mem preview
+	std::string statement(statement2);
+	return statement;
+}
+
+//remove comments <!-- ... -->
+std::string RemoveHtmlComments(std::string _statement)
+{
+	size_t openTagOpenCharacterIndex = 0;
+	size_t openTagCloseCharacterIndex = 0;
+
+	// Visual studio 2022 supress for mem preview
+	std::string statement2 = RemoveSpaces(_statement);
+
+	while (true)
+	{
+		openTagOpenCharacterIndex = statement2.find("<--");  // |<tag ...  >
+		if (openTagOpenCharacterIndex == std::string::npos) break;  // there is no any open prefixes
+
+		openTagCloseCharacterIndex = statement2.find('>', openTagOpenCharacterIndex);  // <tag|>
+		if (openTagCloseCharacterIndex == std::string::npos) break;
+
+		auto it = statement2.begin();
+		statement2.erase(it + openTagOpenCharacterIndex, it + openTagCloseCharacterIndex + 1);
+	}
+
+	// Visual studio 2022 supress for mem preview
+	std::string statement(statement2);
+	return statement;
+}
 
 // STATIC DEFINITIONS
 
 static std::string RemoveSpaces(std::string str)
 {
-	str.erase(remove(str.begin(), str.end(), ' '), str.end());
+	str.erase(remove_if(str.begin(), str.end(), std::isspace), str.end());
 
 	return str;
 }
