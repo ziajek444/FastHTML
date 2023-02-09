@@ -26,6 +26,8 @@ public:
 
 	std::string GetLastData();
 	std::string GetFirstData();
+	std::string GetFirstNotEmptyData();
+	std::string GetLastNotEmptyData();
 	std::list<std::string> GetListedData();
 
 private:

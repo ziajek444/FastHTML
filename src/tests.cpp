@@ -16,6 +16,8 @@
 #define DO_TEST_ComplexTag_ComplexTag_09 RUN
 #define DO_TEST_ComplexTag_ComplexTag_10 RUN
 #define DO_TEST_ComplexTag_ComplexTag_11 RUN
+#define DO_TEST_ComplexTag_GetLastNotEmptyData_01 RUN
+#define DO_TEST_ComplexTag_GetFirstNotEmptyData_01 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 RUN
@@ -239,6 +241,51 @@ TEST(ComplexTag, ComplexTag_11) {
 	std::string ret = lastResponse.GetLastData();
 	EXPECT_EQ(ret, "UPS");
 }
+
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// GetFirstNotEmptyData
+
+TEST(ComplexTag, GetFirstNotEmptyData_01) {
+#if DO_TEST_ComplexTag_GetFirstNotEmptyData_01 == 0
+	GTEST_SKIP();
+#endif
+	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrNames
+	std::string resp = "<body><div><p id=11 class=\"XWING\"></p><p class=\"XWING\" id=11>General Kenobi</p><p class=\"XWING\" id=11>Lightsaber</p></div><p id=11 class=\"XWING\">Tatoine</p></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "11";
+	filter.second["class"] = "XWING";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetFirstNotEmptyData();
+	EXPECT_EQ(ret, "General Kenobi");
+	ret = lastResponse.GetFirstData();
+	EXPECT_EQ(ret, "");
+}
+
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// GetLastNotEmptyData
+
+TEST(ComplexTag, GetLastNotEmptyData_01) {
+#if DO_TEST_ComplexTag_GetLastNotEmptyData_01 == 0
+	GTEST_SKIP();
+#endif
+	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrNames
+	std::string resp = "<body><div><p id=12 class=\"XWING\"></p><p class=\"XWING\" id=12>General Kenobi</p><p class=\"XWING\" id=12>Lightsaber</p><p id=12 class=\"XWING\"></p></div><p id=12 class=\"XWING\">Tatoine</p><p id=12 class=\"XWING\"></p></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "12";
+	filter.second["class"] = "XWING";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastNotEmptyData();
+	EXPECT_EQ(ret, "Tatoine");
+	ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "");
+}
+
 
 
 // -  -  -  -  -  -  -  -  -  -  -  - 

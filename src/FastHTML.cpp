@@ -23,8 +23,8 @@
 
 // TODO : FastHTML from MarketAnal
 // multi filter is required
-// GetListedData(); // return_not_empty() method would be useful						NEXT...
-// execute not from ctor would be more handy
+// GetListedData(); // return_not_empty() method would be useful						DONE!
+// execute not from ctor would be more handy											NEXT...
 // "Only first found" option would speed up work in certain cases
 // queue is important so thread needs to work on separate containers					DONE!
 // space sensetive would be helpful <tag ... attr1 = "n a me" attr2 = "nam e" ...>
@@ -293,6 +293,30 @@ std::string HResponse::GetLastData()
 std::string HResponse::GetFirstData()
 {
 	if (occurrence.size() > 0) return occurrence.front();
+
+	return "UPS";
+}
+
+std::string HResponse::GetFirstNotEmptyData()
+{
+	for (auto element : occurrence) {
+		if (!element.empty()) {
+			return element;
+		}
+	}
+
+	return "UPS";
+}
+
+std::string HResponse::GetLastNotEmptyData()
+{
+	auto itEnd = occurrence.rbegin();
+	while (itEnd != occurrence.rend()) {
+		if (!itEnd->empty()) {
+			return *itEnd;
+		}
+		itEnd++;
+	}
 
 	return "UPS";
 }
