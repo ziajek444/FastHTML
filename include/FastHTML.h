@@ -21,6 +21,8 @@ public:
 	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter);
 	//HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg);
 	HResponse(const std::string* body, const std::string tag);
+	HResponse(const std::string* _body, const std::vector<std::pair<std::string, std::map<std::string, std::string>>> _filterArr);
+
 	virtual ~HResponse();
 
 
@@ -39,6 +41,12 @@ private:
 	unsigned int threadsToRun = 0;
 	void fillupOccurrences_consumer(const std::string tag, const std::list<size_t>* refOpenOccurr);
 	void fillupOccurrences_consumer_th(const std::string tag, std::deque<size_t>* refOpenOccurr, std::list<std::string>* occurenceN);
+	const std::vector<std::pair<std::string, std::map<std::string, std::string>>> filterArr;
+	std::vector<std::string> openTagNames; // TODO change to const
+	//std::string openTagName; TODO instead local var
+	void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::list<size_t>* refOpenOccurr);
+	void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::deque<size_t>* refOpenOccurr);
+
 };
 
 #ifdef CUSTOM_GOOGLE_TEST_DEF

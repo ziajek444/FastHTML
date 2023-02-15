@@ -46,9 +46,10 @@ static std::string ExtractStatement(const std::string*, const size_t, const size
 static bool CheckReqAttrExists(const std::string statement, const std::map<std::string, std::string> dict);
 static bool CheckAttrsAreValid(const std::string statement, const std::string openTagName, const std::map<std::string, std::string> dict);
 static std::string ExtractData(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName);
+static std::vector<std::string> FillupOpenTagNames(const std::vector<std::pair<std::string, std::map<std::string, std::string>>> _filterArr);
 
 // CTOR/DTOR
-void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::list<size_t>* refOpenOccurr)
+void HResponse::GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::list<size_t>* refOpenOccurr)
 {
 	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
@@ -65,7 +66,7 @@ void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std
 }
 
 
-void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::deque<size_t> *refOpenOccurr)
+void HResponse::GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::deque<size_t> *refOpenOccurr)
 {
 	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
@@ -80,6 +81,24 @@ void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std
 	}
 }
 
+/* TODO finish
+void HResponse::GetAllTagOpenIndexesMultiFilter(std::string partBody, const std::vector<std::pair<std::string, std::map<std::string, std::string>>> filterArr, std::list<size_t>* refOpenOccurr)
+{
+	std::vector<std::string> openTagName{filterArr.size()};
+	for (int idx = 0; idx < filterArr.size(); idx++) {
+		openTagName[idx] = "<" + filterArr[idx].first;  // to wywolac w funkcji statycznej zwracajacej std::vector<std::string> zeby wypelnic const openTagNames
+	} //
+	size_t openTagOpenIndex = -1;
+	size_t id = 1;
+	std::vector<size_t> tmpVector;
+	while (true) {
+		openTagOpenIndex = partBody.find(openTagName, openTagOpenIndex + 1);
+		if (openTagOpenIndex != std::string::npos) {
+			refOpenOccurr->push_back(openTagOpenIndex);
+		}
+		else { break; }
+	}
+}*/
 
 void HResponse::fillupOccurrences_consumer(const std::string tag, const std::list<size_t>* refOpenOccurr)
 {
@@ -209,12 +228,12 @@ HResponse::HResponse(const std::string* _body, const std::pair<std::string, std:
 		int myi = 0;
 		while (--numCPU)
 		{
-			threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, str_arr[myi], startIndex, filter, &(tagOpenOpenIndexOccurrences_deques[myi]) });
+			threadsVector.push_back(std::thread{ &HResponse::GetAllTagOpenIndexes_th, this, str_arr[myi], startIndex, filter, &(tagOpenOpenIndexOccurrences_deques[myi]) });
 			myi++;
 
 			startIndex += count - (openTagName.size() - 1);
 		}
-		threadsVector.push_back(std::thread{ GetAllTagOpenIndexes_th, str_arr[myi], startIndex, filter, &(tagOpenOpenIndexOccurrences_deques[myi]) });
+		threadsVector.push_back(std::thread{ &HResponse::GetAllTagOpenIndexes_th, this, str_arr[myi], startIndex, filter, &(tagOpenOpenIndexOccurrences_deques[myi]) });
 
 		for (auto& thd : threadsVector) {
 			thd.join();
@@ -271,13 +290,16 @@ HResponse::HResponse(const std::string* _body, const std::string tag) : body(_bo
 		openTagOpenIndex = body->find(openTagName, openTagOpenIndex + openTagName.size());
 		openTagCloseIndex = body->find('>', openTagOpenIndex + openTagName.size());  // index { <tag...|> }
 	} // WHILE
-
-	//Reverse ? occurrence ?
 }
 
 
 HResponse::~HResponse()
 {
+}
+
+HResponse::HResponse(const std::string* _body, const std::vector<std::pair<std::string, std::map<std::string, std::string>>> _filterArr): reqAnyAttr(false), body(_body), filterArr(_filterArr)
+{
+	openTagNames = FillupOpenTagNames(_filterArr); // TODO change to const
 }
 
 
@@ -573,7 +595,6 @@ static bool CheckAttrsAreValid(const std::string statement, const std::string op
 	return attrsAreValid;
 }
 
-
 static std::string ExtractData(const std::string* body, const size_t openTagCloseIndex, size_t closeTagOpenIndex, const std::string openTagName, const std::string closeTagName)
 {
 	std::string debugstring = body->substr(openTagCloseIndex + 1, closeTagOpenIndex - (openTagCloseIndex + 1));
@@ -604,6 +625,16 @@ static std::string ExtractData(const std::string* body, const size_t openTagClos
 	}
 
 	return body->substr(openTagCloseIndex + 1, closeTagOpenIndex - (openTagCloseIndex + 1));
+}
+
+static std::vector<std::string> FillupOpenTagNames(const std::vector<std::pair<std::string, std::map<std::string, std::string>>> _filterArr)
+{
+	std::vector<std::string> openTagName{ _filterArr.size() };
+	for (int idx = 0; idx < _filterArr.size(); idx++) {
+		openTagName[idx] = "<" + _filterArr[idx].first;
+	}
+	//const std::vector<std::string> ret = openTagName;
+	return openTagName;
 }
 
 
