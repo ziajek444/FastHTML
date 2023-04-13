@@ -16,6 +16,8 @@
 #define DO_TEST_ComplexTag_ComplexTag_09 RUN
 #define DO_TEST_ComplexTag_ComplexTag_10 RUN
 #define DO_TEST_ComplexTag_ComplexTag_11 RUN
+#define DO_TEST_ComplexTag_GetLastNotEmptyData_01 RUN
+#define DO_TEST_ComplexTag_GetFirstNotEmptyData_01 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 RUN
@@ -34,6 +36,7 @@
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 RUN  // related to DO_TEST_ComplexTag_ComplexTag_4
+#define DO_TEST_FastHTML_ClearTagsOnly_ClearTagsOnly_01 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_01 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_02 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_03 RUN
@@ -58,6 +61,7 @@
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_04 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 RUN
+#define DO_TEST_STATIC_FastHTML_RemoveSpaces_07 RUN
 #define DO_TEST_STATIC_FastHTML_HasAnyAttr_01 RUN
 #define DO_TEST_STATIC_FastHTML_HasAnyAttr_02 RUN
 #define DO_TEST_STATIC_FastHTML_HasAnyAttr_03 RUN
@@ -239,6 +243,51 @@ TEST(ComplexTag, ComplexTag_11) {
 }
 
 
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// GetFirstNotEmptyData
+
+TEST(ComplexTag, GetFirstNotEmptyData_01) {
+#if DO_TEST_ComplexTag_GetFirstNotEmptyData_01 == 0
+	GTEST_SKIP();
+#endif
+	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrNames
+	std::string resp = "<body><div><p id=11 class=\"XWING\"></p><p class=\"XWING\" id=11>General Kenobi</p><p class=\"XWING\" id=11>Lightsaber</p></div><p id=11 class=\"XWING\">Tatoine</p></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "11";
+	filter.second["class"] = "XWING";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetFirstNotEmptyData();
+	EXPECT_EQ(ret, "General Kenobi");
+	ret = lastResponse.GetFirstData();
+	EXPECT_EQ(ret, "");
+}
+
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// GetLastNotEmptyData
+
+TEST(ComplexTag, GetLastNotEmptyData_01) {
+#if DO_TEST_ComplexTag_GetLastNotEmptyData_01 == 0
+	GTEST_SKIP();
+#endif
+	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrNames
+	std::string resp = "<body><div><p id=12 class=\"XWING\"></p><p class=\"XWING\" id=12>General Kenobi</p><p class=\"XWING\" id=12>Lightsaber</p><p id=12 class=\"XWING\"></p></div><p id=12 class=\"XWING\">Tatoine</p><p id=12 class=\"XWING\"></p></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "12";
+	filter.second["class"] = "XWING";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastNotEmptyData();
+	EXPECT_EQ(ret, "Tatoine");
+	ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "");
+}
+
+
+
 // -  -  -  -  -  -  -  -  -  -  -  - 
 // ClearOtherTags
 
@@ -404,6 +453,19 @@ TEST(FastHTML_ClearOtherTags, ClearOtherTags_18) {
 	EXPECT_EQ(ret, "Han Solo");
 }
 
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// ClearOnlyTags
+
+TEST(FastHTML_ClearTagsOnly, ClearTagsOnly_01) {
+#if DO_TEST_FastHTML_ClearTagsOnly_ClearTagsOnly_01 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "Han <p>pilot < / p>Solo<tr>the Third";
+	std::string ret = ClearTagsOnly(resp);
+	EXPECT_EQ(ret, "Han pilot Solothe Third");
+}
 
 
 
@@ -632,6 +694,16 @@ TEST(STATIC_FastHTML, RemoveSpaces_06) {
 	std::string resp = " ";
 	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
 	EXPECT_EQ(ret, "");
+}
+
+TEST(STATIC_FastHTML, RemoveSpaces_07) {
+#if DO_TEST_STATIC_FastHTML_RemoveSpaces_07 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "space_ \n_enter_\n\r_unix-enter-"
+		"-real-enter";
+	std::string ret = GtestWrapper_FastHTML_RemoveSpaces(resp);
+	EXPECT_EQ(ret, "space__enter__unix-enter--real-enter");
 }
 
 

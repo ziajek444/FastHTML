@@ -8,25 +8,28 @@
 #include <utility>
 #include <map>
 #include <list>
-
 #include <vector>
-#include <mutex>
 #include <deque>
 
 std::string ClearOtherTags(const std::string dataWithTags);
+std::string ClearTagsOnly(std::string _statement);
 
-// TODO: Reference additional headers your program requires here.
+
 class HResponse
 {
 public:
 	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter);
 	//HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg);
 	HResponse(const std::string* body, const std::string tag);
+	HResponse(const std::string* _body, const std::vector<std::pair<std::string, std::map<std::string, std::string>>> _filterArr);
+
 	virtual ~HResponse();
 
 
 	std::string GetLastData();
 	std::string GetFirstData();
+	std::string GetFirstNotEmptyData();
+	std::string GetLastNotEmptyData();
 	std::list<std::string> GetListedData();
 
 private:
@@ -34,21 +37,17 @@ private:
 	const std::pair<std::string, std::map<std::string, std::string>> filter;
 	const std::string* body;
 	const bool reqAnyAttr;
-	std::mutex mtxFillup;
-	std::mutex mtx1;
-	std::mutex mtx2;
-	std::condition_variable cvFillup;
-	std::condition_variable cv1;
-	std::condition_variable cv2;
 	unsigned int currentThreadID = 0;
 	unsigned int threadsToRun = 0;
 	void fillupOccurrences_consumer(const std::string tag, const std::list<size_t>* refOpenOccurr);
-	void fillupOccurrences_consumer_th(const std::string tag, std::deque<size_t>* refOpenOccurr, const size_t startIndex, const size_t stopIndex);
-};
+	void fillupOccurrences_consumer_th(const std::string tag, std::deque<size_t>* refOpenOccurr, std::list<std::string>* occurenceN);
+	const std::vector<std::pair<std::string, std::map<std::string, std::string>>> filterArr;
+	std::vector<std::string> openTagNames; // TODO change to const
+	//std::string openTagName; TODO instead local var
+	void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::list<size_t>* refOpenOccurr);
+	void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::deque<size_t>* refOpenOccurr);
 
-// TODO remove
-// execute time test
-void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::vector<size_t>* refOpenOccurr);
+};
 
 #ifdef CUSTOM_GOOGLE_TEST_DEF
 std::string GtestWrapper_FastHTML_RemoveSpaces(std::string);
