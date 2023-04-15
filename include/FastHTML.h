@@ -19,9 +19,7 @@ class HResponse
 {
 public:
 	HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter);
-	//HResponse(const std::string* body, const std::pair<std::string, std::map<std::string, std::string>> filter, bool alterAlg);
 	HResponse(const std::string* body, const std::string tag);
-	HResponse(const std::string* _body, const std::vector<std::pair<std::string, std::map<std::string, std::string>>> _filterArr);
 
 	virtual ~HResponse();
 
@@ -44,8 +42,8 @@ private:
 	const std::vector<std::pair<std::string, std::map<std::string, std::string>>> filterArr;
 	std::vector<std::string> openTagNames; // TODO change to const
 	//std::string openTagName; TODO instead local var
-	void GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::list<size_t>* refOpenOccurr);
-	void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::deque<size_t>* refOpenOccurr);
+	void GetAllTagOpenIndexes(std::string partBody, std::string tag, std::list<size_t>* refOpenOccurr);
+	void GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, std::string tag, std::deque<size_t>* refOpenOccurr);
 
 };
 

@@ -15,25 +15,13 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <tuple>
-
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <deque>
 
-// TODO : FastHTML from MarketAnal
-// multi filter is required
-// GetListedData(); // return_not_empty() method would be useful						DONE!
-// execute not from ctor would be more handy											NEXT...
-// "Only first found" option would speed up work in certain cases
-// queue is important so thread needs to work on separate containers					DONE!
-// space sensetive would be helpful <tag ... attr1 = "n a me" attr2 = "nam e" ...>
-// "n a me" != "nam e"
-// GetAllTagOpenIndexes() should filter out wrong tags (not append if not match)
-// !! remove comments <!-- ... -->														DONE! & enchanted by std::isspace
 
 // STATIC PROTOTYPES
-
 static std::string RemoveSpaces(std::string);
 static std::string StickPrefixWithTag(std::string statement);
 static size_t FindWhitespace(const std::string, const size_t);
@@ -49,9 +37,8 @@ static std::string ExtractData(const std::string* body, const size_t openTagClos
 static std::vector<std::string> FillupOpenTagNames(const std::vector<std::pair<std::string, std::map<std::string, std::string>>> _filterArr);
 
 // CTOR/DTOR
-void HResponse::GetAllTagOpenIndexes(std::string partBody, const std::pair<std::string, std::map<std::string, std::string>> filter, std::list<size_t>* refOpenOccurr)
+void HResponse::GetAllTagOpenIndexes(std::string partBody, std::string tag, std::list<size_t>* refOpenOccurr)
 {
-	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
 	size_t openTagOpenIndex = -1;
 	size_t id = 1;
@@ -65,10 +52,8 @@ void HResponse::GetAllTagOpenIndexes(std::string partBody, const std::pair<std::
 	}
 }
 
-
-void HResponse::GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, const std::pair<std::string, std::map<std::string, std::string>> filter, std::deque<size_t> *refOpenOccurr)
+void HResponse::GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset, std::string tag, std::deque<size_t> *refOpenOccurr)
 {
-	const std::string tag = RemoveSpaces(filter.first);
 	const std::string openTagName = '<' + tag;
 	size_t openTagOpenIndex = -1;
 	size_t id = 1;
@@ -80,25 +65,6 @@ void HResponse::GetAllTagOpenIndexes_th(std::string_view partBody, size_t offset
 		else { break; }
 	}
 }
-
-/* TODO finish
-void HResponse::GetAllTagOpenIndexesMultiFilter(std::string partBody, const std::vector<std::pair<std::string, std::map<std::string, std::string>>> filterArr, std::list<size_t>* refOpenOccurr)
-{
-	std::vector<std::string> openTagName{filterArr.size()};
-	for (int idx = 0; idx < filterArr.size(); idx++) {
-		openTagName[idx] = "<" + filterArr[idx].first;  // to wywolac w funkcji statycznej zwracajacej std::vector<std::string> zeby wypelnic const openTagNames
-	} //
-	size_t openTagOpenIndex = -1;
-	size_t id = 1;
-	std::vector<size_t> tmpVector;
-	while (true) {
-		openTagOpenIndex = partBody.find(openTagName, openTagOpenIndex + 1);
-		if (openTagOpenIndex != std::string::npos) {
-			refOpenOccurr->push_back(openTagOpenIndex);
-		}
-		else { break; }
-	}
-}*/
 
 void HResponse::fillupOccurrences_consumer(const std::string tag, const std::list<size_t>* refOpenOccurr)
 {
@@ -165,16 +131,10 @@ void HResponse::fillupOccurrences_consumer_th(const std::string tag, std::deque<
 			if (closeTagOpenIndex == std::string::npos) throw std::length_error("Missing close tag in html statement");
 
 			if (openTagCloseIndex + 1 == closeTagOpenIndex) { //there is no data
-				/*mtxFillup.lock();
-				occurrence.push_back("");
-				mtxFillup.unlock();*/
 				occurenceN->push_back("");
 			}
 			else {
 				std::string extractedDataBeforeMutex = ExtractData(body, openTagCloseIndex, closeTagOpenIndex, openTagName, closeTagName);
-				/*mtxFillup.lock();
-				occurrence.push_back(extractedDataBeforeMutex);
-				mtxFillup.unlock();*/
 				occurenceN->push_back(extractedDataBeforeMutex);
 			}
 		}
@@ -201,10 +161,10 @@ HResponse::HResponse(const std::string* _body, const std::pair<std::string, std:
 	
 	if (bodySize < minResonableSize) {
 		std::list<size_t> tagOpenOpenIndexOccurrences_list;
-		GetAllTagOpenIndexes(*body, filter, &tagOpenOpenIndexOccurrences_list);
+		GetAllTagOpenIndexes(*body, tag, &tagOpenOpenIndexOccurrences_list);
 		fillupOccurrences_consumer(tag, &tagOpenOpenIndexOccurrences_list);
 	}
-	else { 
+	else {
 		numCPU = numCPU >= 2 ? numCPU : 2;
 		size_t count = bodySize / numCPU;
 		size_t startIndex = 0;
@@ -228,12 +188,12 @@ HResponse::HResponse(const std::string* _body, const std::pair<std::string, std:
 		int myi = 0;
 		while (--numCPU)
 		{
-			threadsVector.push_back(std::thread{ &HResponse::GetAllTagOpenIndexes_th, this, str_arr[myi], startIndex, filter, &(tagOpenOpenIndexOccurrences_deques[myi]) });
+			threadsVector.push_back(std::thread{ &HResponse::GetAllTagOpenIndexes_th, this, str_arr[myi], startIndex, tag, &(tagOpenOpenIndexOccurrences_deques[myi]) });
 			myi++;
 
 			startIndex += count - (openTagName.size() - 1);
 		}
-		threadsVector.push_back(std::thread{ &HResponse::GetAllTagOpenIndexes_th, this, str_arr[myi], startIndex, filter, &(tagOpenOpenIndexOccurrences_deques[myi]) });
+		threadsVector.push_back(std::thread{ &HResponse::GetAllTagOpenIndexes_th, this, str_arr[myi], startIndex, tag, &(tagOpenOpenIndexOccurrences_deques[myi]) });
 
 		for (auto& thd : threadsVector) {
 			thd.join();
@@ -295,11 +255,6 @@ HResponse::HResponse(const std::string* _body, const std::string tag) : body(_bo
 
 HResponse::~HResponse()
 {
-}
-
-HResponse::HResponse(const std::string* _body, const std::vector<std::pair<std::string, std::map<std::string, std::string>>> _filterArr): reqAnyAttr(false), body(_body), filterArr(_filterArr)
-{
-	openTagNames = FillupOpenTagNames(_filterArr); // TODO change to const
 }
 
 

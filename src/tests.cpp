@@ -5,19 +5,26 @@
 #define RUN 1
 #define SKIP 0
 
+#define DO_TEST_ComplexFilter_ComplexFilter_01 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_02 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_03 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_04 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_05 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_06 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_07 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_08 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_09 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_10 RUN
+#define DO_TEST_ComplexFilter_ComplexFilter_11 RUN
+
+#define DO_TEST_ComplexFilter_GetLastNotEmptyData_01 RUN
+#define DO_TEST_ComplexFilter_GetFirstNotEmptyData_01 RUN
+
 #define DO_TEST_ComplexTag_ComplexTag_01 RUN
 #define DO_TEST_ComplexTag_ComplexTag_02 RUN
 #define DO_TEST_ComplexTag_ComplexTag_03 RUN
 #define DO_TEST_ComplexTag_ComplexTag_04 RUN
-#define DO_TEST_ComplexTag_ComplexTag_05 RUN
-#define DO_TEST_ComplexTag_ComplexTag_06 RUN
-#define DO_TEST_ComplexTag_ComplexTag_07 RUN
-#define DO_TEST_ComplexTag_ComplexTag_08 RUN
-#define DO_TEST_ComplexTag_ComplexTag_09 RUN
-#define DO_TEST_ComplexTag_ComplexTag_10 RUN
-#define DO_TEST_ComplexTag_ComplexTag_11 RUN
-#define DO_TEST_ComplexTag_GetLastNotEmptyData_01 RUN
-#define DO_TEST_ComplexTag_GetFirstNotEmptyData_01 RUN
+
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_01 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_02 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_03 RUN
@@ -35,8 +42,10 @@
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_15 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_16 RUN
 #define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_17 RUN
-#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 RUN  // related to DO_TEST_ComplexTag_ComplexTag_4
+#define DO_TEST_FastHTML_ClearOtherTags_ClearOtherTags_18 RUN  // related to DO_TEST_ComplexFilter_ComplexFilter_4
+
 #define DO_TEST_FastHTML_ClearTagsOnly_ClearTagsOnly_01 RUN
+
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_01 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_02 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_03 RUN
@@ -47,6 +56,7 @@
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_08 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_09 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_10 RUN
+
 #define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_01 RUN
 #define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_02 RUN
 #define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_03 RUN
@@ -55,6 +65,7 @@
 #define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_06 RUN
 #define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_07 RUN
 #define DO_TEST_STATIC_FastHTML_StickPrefixWithTag_08 RUN
+
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_01 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_02 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_03 RUN
@@ -62,33 +73,44 @@
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_05 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_06 RUN
 #define DO_TEST_STATIC_FastHTML_RemoveSpaces_07 RUN
+
 #define DO_TEST_STATIC_FastHTML_HasAnyAttr_01 RUN
 #define DO_TEST_STATIC_FastHTML_HasAnyAttr_02 RUN
 #define DO_TEST_STATIC_FastHTML_HasAnyAttr_03 RUN
+
 #define DO_TEST_STATIC_FastHTML_RequireAnyAttr_01 RUN
 #define DO_TEST_STATIC_FastHTML_RequireAnyAttr_02 RUN
 #define DO_TEST_STATIC_FastHTML_RequireAnyAttr_03 RUN
+
 #define DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_01 RUN
 #define DO_TEST_STATIC_FastHTML_GetOpenTagIndexes_02 RUN
+
 #define DO_TEST_STATIC_FastHTML_GetNextOpenTagOpenIndex_01 RUN
 #define DO_TEST_STATIC_FastHTML_GetNextOpenTagCloseIndex_01 RUN
+
 #define DO_TEST_STATIC_FastHTML_ExtractStatement_01 RUN
+
 #define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_01 RUN
 #define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_02 RUN
 #define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_03 RUN
 #define DO_TEST_STATIC_FastHTML_CheckReqAttrExists_04 RUN
 #define DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_01 RUN
 #define DO_TEST_STATIC_FastHTML_CheckAttrsAreValid_02 RUN
+
 #define DO_TEST_STATIC_FastHTML_ExtractData_01 RUN
 
 #define GTEST_COUT std::cerr << " ! ! ! \n"
 
 
+// ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    
+// // ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##  
+// ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##      
 // -  -  -  -  -  -  -  -  -  -  -  - 
-// obj init
+// CONSTRUCTORS
+// HResponse lastResponse{ &resp, filter }
 
-TEST(ComplexTag, ComplexTag_1) {
-#if DO_TEST_ComplexTag_ComplexTag_01 == 0
+TEST(ComplexFilter, ComplexFilter_1) {
+#if DO_TEST_ComplexFilter_ComplexFilter_01 == 0
 	GTEST_SKIP();
 #endif
 	std::string resp = "<body><div><p>General Kenobi</p></div><span>4.4</span><div><p>Hello There</p><p class = \"Dog\">Hello There</p></div><p class=\"Cat\">Han Solo</p><div><p>Grives</p></div></body>";
@@ -100,8 +122,8 @@ TEST(ComplexTag, ComplexTag_1) {
 	EXPECT_EQ(lastResponse.GetLastData(), "Grives");
 }
 
-TEST(ComplexTag, ComplexTag_2) {
-#if DO_TEST_ComplexTag_ComplexTag_02 == 0
+TEST(ComplexFilter, ComplexFilter_2) {
+#if DO_TEST_ComplexFilter_ComplexFilter_02 == 0
 	GTEST_SKIP();
 #endif
 	std::string resp = "<body><div><p>General Kenobi</p></div><span>4.4</span><div><p>Hello There</p><p class = \"Dog\">Hello There</p></div><p class=\"Cat\">Han Solo</p><div><p>Grives</p></div></body>";
@@ -113,8 +135,8 @@ TEST(ComplexTag, ComplexTag_2) {
 	EXPECT_EQ(ret, "Hello There");
 }
 
-TEST(ComplexTag, ComplexTag_3) {
-#if DO_TEST_ComplexTag_ComplexTag_03 == 0
+TEST(ComplexFilter, ComplexFilter_3) {
+#if DO_TEST_ComplexFilter_ComplexFilter_03 == 0
 	GTEST_SKIP();
 #endif
 	std::string resp = "<body><div><p>General Kenobi</p></div><span>4.4</span><div><p>Hello There</p><p class = \"Dog\">Hello There</p></div><p class=\"Cat\">Han Solo</p><div><p>Grives</p></div></body>";
@@ -126,8 +148,8 @@ TEST(ComplexTag, ComplexTag_3) {
 	EXPECT_EQ(ret, "Han Solo");
 }
 
-TEST(ComplexTag, ComplexTag_4) {
-#if DO_TEST_ComplexTag_ComplexTag_04 == 0
+TEST(ComplexFilter, ComplexFilter_4) {
+#if DO_TEST_ComplexFilter_ComplexFilter_04 == 0
 	GTEST_SKIP();
 #endif
 	// <p></p> inside
@@ -140,8 +162,8 @@ TEST(ComplexTag, ComplexTag_4) {
 	EXPECT_EQ(ret, "Han <p>nothing</p>Solo");
 }
 
-TEST(ComplexTag, ComplexTag_5) {
-#if DO_TEST_ComplexTag_ComplexTag_05 == 0
+TEST(ComplexFilter, ComplexFilter_5) {
+#if DO_TEST_ComplexFilter_ComplexFilter_05 == 0
 	GTEST_SKIP();
 #endif
 	// </p> inside, no open exists
@@ -154,8 +176,8 @@ TEST(ComplexTag, ComplexTag_5) {
 	EXPECT_EQ(ret, "Han ");
 }
 
-TEST(ComplexTag, ComplexTag_6) {
-#if DO_TEST_ComplexTag_ComplexTag_06 == 0
+TEST(ComplexFilter, ComplexFilter_6) {
+#if DO_TEST_ComplexFilter_ComplexFilter_06 == 0
 	GTEST_SKIP();
 #endif
 	// <p> inside, no close exists
@@ -168,8 +190,8 @@ TEST(ComplexTag, ComplexTag_6) {
 	EXPECT_EQ(ret, "Han <p>Solo</p><div><p>Grives");
 }
 
-TEST(ComplexTag, ComplexTag_7) {
-#if DO_TEST_ComplexTag_ComplexTag_07 == 0
+TEST(ComplexFilter, ComplexFilter_7) {
+#if DO_TEST_ComplexFilter_ComplexFilter_07 == 0
 	GTEST_SKIP();
 #endif
 	// looking for tag does not exists
@@ -182,8 +204,8 @@ TEST(ComplexTag, ComplexTag_7) {
 	EXPECT_EQ(ret, "UPS");
 }
 
-TEST(ComplexTag, ComplexTag_8) {
-#if DO_TEST_ComplexTag_ComplexTag_08 == 0
+TEST(ComplexFilter, ComplexFilter_8) {
+#if DO_TEST_ComplexFilter_ComplexFilter_08 == 0
 	GTEST_SKIP();
 #endif
 	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrValues #1
@@ -197,8 +219,8 @@ TEST(ComplexTag, ComplexTag_8) {
 	EXPECT_EQ(ret, "UPS");
 }
 
-TEST(ComplexTag, ComplexTag_9) {
-#if DO_TEST_ComplexTag_ComplexTag_09 == 0
+TEST(ComplexFilter, ComplexFilter_9) {
+#if DO_TEST_ComplexFilter_ComplexFilter_09 == 0
 	GTEST_SKIP();
 #endif
 	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrValues #2
@@ -212,8 +234,8 @@ TEST(ComplexTag, ComplexTag_9) {
 	EXPECT_EQ(ret, "UPS");
 }
 
-TEST(ComplexTag, ComplexTag_10) {
-#if DO_TEST_ComplexTag_ComplexTag_10 == 0
+TEST(ComplexFilter, ComplexFilter_10) {
+#if DO_TEST_ComplexFilter_ComplexFilter_10 == 0
 	GTEST_SKIP();
 #endif
 	// cover CRC for tests 8 and 9
@@ -227,8 +249,8 @@ TEST(ComplexTag, ComplexTag_10) {
 	EXPECT_EQ(ret, "Hello There");
 }
 
-TEST(ComplexTag, ComplexTag_11) {
-#if DO_TEST_ComplexTag_ComplexTag_11 == 0
+TEST(ComplexFilter, ComplexFilter_11) {
+#if DO_TEST_ComplexFilter_ComplexFilter_11 == 0
 	GTEST_SKIP();
 #endif
 	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrNames
@@ -245,10 +267,71 @@ TEST(ComplexTag, ComplexTag_11) {
 
 
 // -  -  -  -  -  -  -  -  -  -  -  - 
+// HResponse lastResponse{ &resp, tag }
+
+TEST(ComplexTag, ComplexTag_01) {
+#if DO_TEST_ComplexTag_ComplexTag_01 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<body><div><p id=12>Hello There</p><p class=\"XWING\">General Kenobi</p></div></body>";
+	std::string tag = "p";
+	HResponse lastResponse{ &resp, tag };
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "UPS");
+}
+
+TEST(ComplexTag, ComplexTag_02) {
+#if DO_TEST_ComplexTag_ComplexTag_02 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<body><div><p>Hello There</p><p class=\"XWING\">General Kenobi</p></div></body>";
+	std::string tag = "p";
+	HResponse lastResponse{ &resp, tag };
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "Hello There");
+}
+
+TEST(ComplexTag, ComplexTag_03) {
+#if DO_TEST_ComplexTag_ComplexTag_03 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<body><div><p>Hello There</p><p class=\"XWING\">General Kenobi</p></div><p>R2D2</p></body>";
+	std::string tag = "p";
+	HResponse lastResponse{ &resp, tag };
+	std::string ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "R2D2");
+}
+
+TEST(ComplexTag, ComplexTag_04) {
+#if DO_TEST_ComplexTag_ComplexTag_04 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<body><div><p>Hello There</p><p class=\"XWING\">General Kenobi</p></div><p>R2D2</p></body>";
+	std::string tag = "p";
+	HResponse lastResponse{ &resp, tag };
+	std::string ret = lastResponse.GetFirstData();
+	EXPECT_EQ(ret, "Hello There");
+	ret = lastResponse.GetFirstNotEmptyData();
+	EXPECT_EQ(ret, "Hello There");
+	ret = lastResponse.GetLastNotEmptyData();
+	EXPECT_EQ(ret, "R2D2");
+	ret = lastResponse.GetLastData();
+	EXPECT_EQ(ret, "R2D2");
+}
+
+
+
+// ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    
+// // ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##  
+// ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    ##    
+
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
 // GetFirstNotEmptyData
 
-TEST(ComplexTag, GetFirstNotEmptyData_01) {
-#if DO_TEST_ComplexTag_GetFirstNotEmptyData_01 == 0
+TEST(ComplexFilter, GetFirstNotEmptyData_01) {
+#if DO_TEST_ComplexFilter_GetFirstNotEmptyData_01 == 0
 	GTEST_SKIP();
 #endif
 	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrNames
@@ -269,8 +352,8 @@ TEST(ComplexTag, GetFirstNotEmptyData_01) {
 // -  -  -  -  -  -  -  -  -  -  -  - 
 // GetLastNotEmptyData
 
-TEST(ComplexTag, GetLastNotEmptyData_01) {
-#if DO_TEST_ComplexTag_GetLastNotEmptyData_01 == 0
+TEST(ComplexFilter, GetLastNotEmptyData_01) {
+#if DO_TEST_ComplexFilter_GetLastNotEmptyData_01 == 0
 	GTEST_SKIP();
 #endif
 	// cover CheckAttrsAreValid for reqAttr + hasAttr + notValidAttrNames
