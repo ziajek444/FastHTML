@@ -13,6 +13,7 @@
 
 std::string ClearOtherTags(const std::string dataWithTags);
 std::string ClearTagsOnly(std::string _statement);
+std::string EraseComments(std::string _statement);
 
 
 class HResponse

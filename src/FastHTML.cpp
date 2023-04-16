@@ -391,30 +391,23 @@ std::string ClearTagsOnly(std::string _statement)
 	return statement;
 }
 
-//remove comments <!-- ... -->
-std::string RemoveHtmlComments(std::string _statement)
+//remove comments <!-- ... --> or just "<!--"
+std::string EraseComments(std::string _statement)
 {
-	size_t openTagOpenCharacterIndex = 0;
-	size_t openTagCloseCharacterIndex = 0;
-
-	// Visual studio 2022 supress for mem preview
-	std::string statement2 = RemoveSpaces(_statement);
-
-	while (true)
+	size_t findCommentOpen = _statement.find("<!--");
+	while (findCommentOpen != std::string::npos)
 	{
-		openTagOpenCharacterIndex = statement2.find("<--");  // |<tag ...  >
-		if (openTagOpenCharacterIndex == std::string::npos) break;  // there is no any open prefixes
-
-		openTagCloseCharacterIndex = statement2.find('>', openTagOpenCharacterIndex);  // <tag|>
-		if (openTagCloseCharacterIndex == std::string::npos) break;
-
-		auto it = statement2.begin();
-		statement2.erase(it + openTagOpenCharacterIndex, it + openTagCloseCharacterIndex + 1);
+		size_t findCommentClose = _statement.find("-->");
+		if (findCommentClose == std::string::npos)
+		{
+			_statement.erase(findCommentOpen, 4);
+			break;
+		}
+		_statement.erase(findCommentOpen, findCommentClose- findCommentOpen+3);
+		
+		findCommentOpen = _statement.find("<!--");
 	}
-
-	// Visual studio 2022 supress for mem preview
-	std::string statement(statement2);
-	return statement;
+	return _statement;
 }
 
 // STATIC DEFINITIONS

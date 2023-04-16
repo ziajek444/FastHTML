@@ -46,6 +46,13 @@
 
 #define DO_TEST_FastHTML_ClearTagsOnly_ClearTagsOnly_01 RUN
 
+#define DO_TEST_FastHTML_RemoveHtmlComments_RemoveHtmlComments_01 RUN
+
+#define DO_TEST_FastHTML_EraseComments_EraseComments_01 RUN
+#define DO_TEST_FastHTML_EraseComments_EraseComments_02 RUN
+#define DO_TEST_FastHTML_EraseComments_EraseComments_03 RUN
+#define DO_TEST_FastHTML_EraseComments_EraseComments_04 RUN
+
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_01 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_02 RUN
 #define DO_TEST_STATIC_FastHTML_FindWhitespace_03 RUN
@@ -548,6 +555,75 @@ TEST(FastHTML_ClearTagsOnly, ClearTagsOnly_01) {
 	std::string resp = "Han <p>pilot < / p>Solo<tr>the Third";
 	std::string ret = ClearTagsOnly(resp);
 	EXPECT_EQ(ret, "Han pilot Solothe Third");
+}
+
+
+
+// -  -  -  -  -  -  -  -  -  -  -  - 
+// EraseComments
+
+TEST(FastHTML_EraseComments, EraseComments_01) {
+#if DO_TEST_FastHTML_EraseComments_EraseComments_01 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<body><div><p id=7 class=\"Interceptor\">Execute order <!-- ff --> sixty six</p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "7";
+	filter.second["class"] = "Interceptor";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastNotEmptyData();
+	EXPECT_EQ(ret, "Execute order <!-- ff --> sixty six");
+	ret = EraseComments(ret);
+	EXPECT_EQ(ret, "Execute order  sixty six");
+}
+
+TEST(FastHTML_EraseComments, EraseComments_02) {
+#if DO_TEST_FastHTML_EraseComments_EraseComments_02 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<body><div><p id=7 class=\"Interceptor\"><!-- title -->attack of the clones</p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "7";
+	filter.second["class"] = "Interceptor";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastNotEmptyData();
+	EXPECT_EQ(ret, "<!-- title -->attack of the clones");
+	ret = EraseComments(ret);
+	EXPECT_EQ(ret, "attack of the clones");
+}
+
+TEST(FastHTML_EraseComments, EraseComments_03) {
+#if DO_TEST_FastHTML_EraseComments_EraseComments_03 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<body><div><p id=7 class=\"Interceptor\">attack of the clones<!-- fin --></p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "7";
+	filter.second["class"] = "Interceptor";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastNotEmptyData();
+	EXPECT_EQ(ret, "attack of the clones<!-- fin -->");
+	ret = EraseComments(ret);
+	EXPECT_EQ(ret, "attack of the clones");
+}
+
+TEST(FastHTML_EraseComments, EraseComments_04) {
+#if DO_TEST_FastHTML_EraseComments_EraseComments_04 == 0
+	GTEST_SKIP();
+#endif
+	std::string resp = "<body><div><p id=7 class=\"Interceptor\"><!-- title -->attack of<!-- middle  --> the clones<!-- fin --></p></div></body>";
+	std::pair<std::string, std::map<std::string, std::string>> filter;
+	filter.first = "p";
+	filter.second["id"] = "7";
+	filter.second["class"] = "Interceptor";
+	HResponse lastResponse{ &resp, filter };
+	std::string ret = lastResponse.GetLastNotEmptyData();
+	EXPECT_EQ(ret, "<!-- title -->attack of<!-- middle  --> the clones<!-- fin -->");
+	ret = EraseComments(ret);
+	EXPECT_EQ(ret, "attack of the clones");
 }
 
 
